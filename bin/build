@@ -3,5 +3,5 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-# Builds the site into _site/
-exec pnpm build
+# Builds the site into web/_site/
+exec pnpm --dir web build

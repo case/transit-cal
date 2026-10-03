@@ -10,6 +10,7 @@
     "build": "eleventy"
   },
   "dependencies": {
-    "@11ty/eleventy": "3.1.6"
+    "@11ty/eleventy": "3.1.6",
+    "@picocss/pico": "2.1.1"
   }
 }
