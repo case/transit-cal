@@ -1,8 +1,10 @@
-# Tools bin/lint calls from PATH. Plain [tools] only, so no `mise trust`.
+# Tools the bin/ scripts call from PATH. Plain [tools] only, so no `mise trust`.
 
 [tools]
 actionlint = "1.7.12"
 caddy = "2.11.6"
 dprint = "0.56.1"
+node = "26.10.0"
+pnpm = "12.8.2"
 shellcheck = "0.11.0"
 shfmt = "3.13.1"

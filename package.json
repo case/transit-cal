@@ -1,0 +1,11 @@
+{
+  "name": "transit-cal",
+  "private": true,
+  "packageManager": "pnpm@12.8.2",
+  "engines": {
+    "node": ">=26.0.0"
+  },
+  "dependencies": {
+    "@11ty/eleventy": "3.1.6"
+  }
+}

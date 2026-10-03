@@ -14,5 +14,9 @@ fi
 echo "==> mise install"
 mise install
 
+# mise exec, since the tools aren't on PATH until mise is activated
+echo "==> pnpm install"
+mise exec -- pnpm install
+
 echo
 echo "✅ Setup done."
