@@ -1,6 +1,6 @@
 ---
 title: Architecture
-summary: Scheduled build: GTFS in, static .ics feeds and website out
+summary: A scheduled build turns GTFS into static .ics feeds and a website
 created: 2026-10-03
 author: Eric Case
 tags: [architecture, stack, codebase, conventions]

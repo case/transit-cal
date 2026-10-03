@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+for tool in dprint shellcheck shfmt; do
+  if ! command -v "$tool" >/dev/null 2>&1; then
+    echo "Error: $tool not found on PATH. Run bin/setup." >&2
+    exit 1
+  fi
+done
+
+echo "==> dprint check"
+dprint check
+
+echo "==> shellcheck"
+shellcheck bin/*
+
+# shfmt reads .editorconfig
+echo "==> shfmt"
+shfmt -d bin/
+
+echo
+echo "✅ Lint passed."

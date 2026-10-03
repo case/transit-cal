@@ -1,0 +1,9 @@
+# Line-ending policy. `eol=lf` overrides core.autocrlf, which Git for Windows sets
+# to true in its system config, so the working tree is byte-identical on every
+# platform and every linter reads the same bytes.
+* text=auto eol=lf
+
+# The only CRLF family. `-text` rather than `text eol=crlf` so jj agrees on the
+# stored bytes; `-eol` is required or these inherit eol=lf from the rule above.
+*.cmd -text -eol
+*.bat -text -eol

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+if ! command -v mise >/dev/null 2>&1; then
+  echo "==> Installing mise"
+  curl -fsSL https://mise.run | sh
+  export PATH="$HOME/.local/bin:$PATH"
+  echo "Activate mise in your shell: https://mise.jdx.dev/getting-started.html"
+fi
+
+# Installs only what mise.toml lists and is missing
+echo "==> mise install"
+mise install
+
+echo
+echo "✅ Setup done."
