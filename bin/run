@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+# Dev server with live reload on all interfaces
+exec pnpm --dir web exec eleventy --serve --port="${PORT:-8080}"
