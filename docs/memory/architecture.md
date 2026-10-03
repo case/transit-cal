@@ -21,7 +21,8 @@ The current implementation of transit-cal. Replace any of this and the [product]
 | Data    | 511.org regional GTFS, via Transitland |
 | Build   | Python                                 |
 | Output  | `.ics` feeds + static website          |
-| Hosting | Static files. Host not chosen.         |
+| Hosting | Railway: Caddy container               |
+| O11y    | Caddy JSON logs, shipped to SigNoz     |
 
 ## Vendor decisions
 
