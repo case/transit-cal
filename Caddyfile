@@ -1,0 +1,21 @@
+:{$PORT:8080} {
+	# Structured access logs on stderr
+	log {
+		format json
+	}
+
+	# Served from the built site, so a missing build fails the deploy healthcheck
+	@healthz path /healthz
+	header @healthz Content-Type text/plain
+	log_skip @healthz
+
+	root * /srv
+	encode zstd gzip
+	file_server
+
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+	}
+}

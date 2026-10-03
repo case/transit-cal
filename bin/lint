@@ -3,7 +3,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-for tool in actionlint dprint shellcheck shfmt; do
+for tool in actionlint caddy dprint shellcheck shfmt; do
   if ! command -v "$tool" >/dev/null 2>&1; then
     echo "Error: $tool not found on PATH. Run bin/setup." >&2
     exit 1
@@ -23,6 +23,12 @@ shfmt -d bin/
 # actionlint also runs shellcheck on run: blocks
 echo "==> actionlint"
 actionlint
+
+echo "==> caddy fmt"
+caddy fmt --diff Caddyfile >/dev/null
+
+echo "==> caddy validate"
+caddy validate --config Caddyfile --adapter caddyfile
 
 echo
 echo "✅ Lint passed."
