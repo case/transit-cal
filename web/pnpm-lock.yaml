@@ -11,6 +11,9 @@ importers:
       '@11ty/eleventy':
         specifier: 3.1.6
         version: 3.1.6
+      '@picocss/pico':
+        specifier: 2.1.1
+        version: 2.1.1
 
 packages:
 
@@ -49,6 +52,9 @@ packages:
   '@11ty/recursive-copy@4.0.4':
     resolution: {integrity: sha512-oI7m8pa7/IAU/3lqRU9vjBbs20iKFo7x+1K9kT3aVira6scc1X9MjBdgLCHzLJeJ7iB6wydioA+kr9/qPnvmlQ==}
     engines: {node: '>=18'}
+
+  '@picocss/pico@2.1.1':
+    resolution: {integrity: sha512-kIDugA7Ps4U+2BHxiNHmvgPIQDWPDU4IeU6TNRdvXQM1uZX+FibqDQT2xUOnnO2yq/LUHcwnGlu1hvf4KfXnMg==}
 
   '@sindresorhus/slugify@2.2.1':
     resolution: {integrity: sha512-MkngSCRZ8JdSOCHRaYd+D01XhvU3Hjy6MGl06zhOk614hp9EOAp5gIkBeQg7wtmxpitU6eAL4kdiRMcJa2dlrw==}
@@ -623,6 +629,8 @@ snapshots:
       junk: 3.1.0
       minimatch: 3.1.5
       slash: 3.0.0
+
+  '@picocss/pico@2.1.1': {}
 
   '@sindresorhus/slugify@2.2.1':
     dependencies:
