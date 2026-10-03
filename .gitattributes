@@ -1,6 +1,4 @@
-# Line-ending policy. `eol=lf` overrides core.autocrlf, which Git for Windows sets
-# to true in its system config, so the working tree is byte-identical on every
-# platform and every linter reads the same bytes.
+# `eol=lf` overrides Git for Windows' core.autocrlf, so every platform sees LF.
 * text=auto eol=lf
 
 # The only CRLF family. `-text` rather than `text eol=crlf` so jj agrees on the
