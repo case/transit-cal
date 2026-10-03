@@ -1,2 +1,5 @@
 # Refuse a Node older than package.json engines.node, rather than warn
 engineStrict: true
+
+# Single-document lockfile until GitHub parses pnpm 12's: dependabot/dependabot-core#15904
+pmOnFail: ignore

@@ -1,3 +1,7 @@
 *
 !Caddyfile
-!public/
+!eleventy.config.js
+!package.json
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
+!source/
