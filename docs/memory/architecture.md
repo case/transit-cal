@@ -12,7 +12,12 @@ The current implementation of transit-cal. Replace any of this and the [product]
 
 ## Repo layout
 
-<Directory tree - top-level dirs and what they hold.>
+```
+bin/        setup, lint, build-site, run-site
+docs/       memory and plans
+web/        11ty site: config, package.json, source/
+Caddyfile   production web server
+```
 
 ## Stack
 
