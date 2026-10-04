@@ -1,0 +1,69 @@
+name = "Golden Gate Ferry"
+gtfs_agency = "GF"
+onestop_id = "o-9q8z-goldengateferry"
+website = "https://www.goldengate.org/ferry/"
+
+[hub]
+station = "mtc:san-francisco-ferry-terminal"
+to = { slug = "to-san-francisco", name = "To San Francisco" }
+from = { slug = "from-san-francisco", name = "From San Francisco" }
+
+[[routes]]
+slug = "larkspur"
+name = "Larkspur"
+gtfs_route = "GF:LSSF"
+url = "https://www.goldengate.org/ferry/route-schedule/larkspur-san-francisco/"
+terminals = ["GF:43004"]
+
+[[routes]]
+slug = "sausalito"
+name = "Sausalito"
+gtfs_route = "GF:SSSF"
+url = "https://www.goldengate.org/ferry/route-schedule/sausalito-san-francisco/"
+terminals = ["GF:43003"]
+
+[[routes]]
+slug = "tiburon"
+name = "Tiburon"
+gtfs_route = "GF:TBSF"
+url = "https://www.goldengate.org/ferry/route-schedule/tiburon-san-francisco/"
+terminals = ["GF:43007"]
+
+[[routes]]
+slug = "angel-island"
+name = "Angel Island"
+gtfs_route = "GF:AISF"
+url = "https://www.goldengate.org/ferry/route-schedule/angel-island-sf/"
+terminals = ["GF:43002"]
+
+[stops."GF:43000"]
+name = "SF Ferry Building"
+gate = "Gate C"
+address = "1 Ferry Building, San Francisco, CA 94111"
+place = "San Francisco Ferry Building Gate C"
+
+[stops."GF:43008"]
+name = "SF Ferry Building"
+gate = "Gate B"
+address = "1 Ferry Building, San Francisco, CA 94111"
+place = "San Francisco Ferry Building Gate B"
+
+[stops."GF:43004"]
+name = "Larkspur"
+address = "101 East Sir Francis Drake Blvd, Larkspur, CA 94939"
+place = "Larkspur Ferry Terminal"
+
+[stops."GF:43003"]
+name = "Sausalito"
+address = "Humboldt & Anchor Streets, Sausalito, CA 94965"
+place = "Sausalito Ferry Terminal"
+
+[stops."GF:43007"]
+name = "Tiburon"
+address = "Tiburon Blvd & Main Street, Tiburon, CA 94920"
+place = "Tiburon Ferry Terminal"
+
+[stops."GF:43002"]
+name = "Angel Island"
+address = "Ayala Cove, Angel Island, Tiburon, CA 94920"
+place = "Angel Island State Park"

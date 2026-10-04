@@ -1,0 +1,113 @@
+name = "SF Bay Ferry"
+gtfs_agency = "SB"
+onestop_id = "o-9q9p-sanfranciscobayferry"
+website = "https://www.sfbayferry.com/"
+
+[hub]
+station = "mtc:san-francisco-ferry-terminal"
+to = { slug = "to-san-francisco", name = "To San Francisco" }
+from = { slug = "from-san-francisco", name = "From San Francisco" }
+
+[[routes]]
+slug = "alameda-seaplane"
+name = "Alameda Seaplane"
+gtfs_route = "SB:SEA"
+url = "https://www.sfbayferry.com/routes-schedules/alameda-seaplane/"
+terminals = ["7207"]
+
+[[routes]]
+slug = "harbor-bay"
+name = "Harbor Bay"
+gtfs_route = "SB:HB"
+url = "https://www.sfbayferry.com/routes-schedules/harbor-bay/"
+terminals = ["7206"]
+
+[[routes]]
+slug = "oakland-alameda"
+name = "Oakland & Alameda"
+gtfs_route = "SB:OA"
+url = "https://www.sfbayferry.com/routes-schedules/oakland-alameda/"
+terminals = ["7208", "7209"]
+
+[[routes]]
+slug = "richmond"
+name = "Richmond"
+gtfs_route = "SB:RCH"
+url = "https://www.sfbayferry.com/routes-schedules/richmond/"
+terminals = ["7211"]
+
+[[routes]]
+slug = "vallejo"
+name = "Vallejo"
+gtfs_route = "SB:VJO"
+url = "https://www.sfbayferry.com/routes-schedules/vallejo/"
+terminals = ["7212", "7213"]
+
+[[routes]]
+slug = "south-san-francisco"
+name = "South San Francisco"
+gtfs_route = "SB:SSF"
+url = "https://www.sfbayferry.com/routes-schedules/south-san-francisco/"
+terminals = ["7208", "7209"]
+
+[routes.hub]
+station = "7205"
+to = { slug = "to-south-san-francisco", name = "To South San Francisco" }
+from = { slug = "to-east-bay", name = "To East Bay" }
+
+[[routes]]
+slug = "oakland-alameda-water-shuttle"
+name = "Oakland Alameda Water Shuttle"
+gtfs_route = "SB:OAS"
+url = "https://www.sfbayferry.com/routes-schedules/oakland-alameda-water-shuttle/"
+terminals = ["7216"]
+
+[routes.hub]
+station = "7215"
+to = { slug = "to-jack-london-square", name = "To Jack London Square" }
+from = { slug = "to-alameda-landing", name = "To Alameda Landing" }
+
+[stops."72011"]
+name = "SF Ferry Building"
+gate = "Gate E"
+address = "1 Ferry Building, San Francisco, CA 94111"
+
+[stops."72012"]
+name = "SF Ferry Building"
+gate = "Gate G"
+address = "1 Ferry Building, San Francisco, CA 94111"
+
+[stops."72013"]
+name = "SF Ferry Building"
+gate = "Gate F"
+address = "1 Ferry Building, San Francisco, CA 94111"
+
+[stops."7206"]
+name = "Harbor Bay"
+
+[stops."7207"]
+name = "Seaplane Lagoon"
+
+[stops."7208"]
+name = "Main St Alameda"
+
+[stops."7209"]
+name = "Oakland"
+
+[stops."7211"]
+name = "Richmond"
+
+[stops."7212"]
+name = "Vallejo"
+
+[stops."7213"]
+name = "Mare Island"
+
+[stops."7205"]
+name = "South San Francisco"
+
+[stops."7215"]
+name = "Jack London Square"
+
+[stops."7216"]
+name = "Alameda Landing"
