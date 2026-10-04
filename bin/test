@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+# Playwright against the 11ty dev server; no Docker needed
+echo "==> playwright"
+pnpm --dir web exec playwright test

@@ -18,5 +18,13 @@ mise install
 echo "==> pnpm install"
 mise exec -- pnpm --dir web install
 
+# CI also needs Chromium's system libraries
+echo "==> playwright install"
+if [ -n "${CI:-}" ]; then
+  mise exec -- pnpm --dir web exec playwright install --with-deps chromium
+else
+  mise exec -- pnpm --dir web exec playwright install chromium
+fi
+
 echo
 echo "✅ Setup done."
