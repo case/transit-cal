@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+if ! docker info >/dev/null 2>&1; then
+  echo "Error: Docker daemon not reachable." >&2
+  exit 1
+fi
+
+# Builds the production image; bin/test-image runs the same tag
+echo "==> docker build"
+exec docker build --tag "${IMAGE:-transit-cal:local}" .
