@@ -226,3 +226,6 @@ _site/
 # Playwright
 test-results/
 playwright-report/
+
+# transit-cal build output
+/out/
