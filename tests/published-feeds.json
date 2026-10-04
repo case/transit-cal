@@ -1,0 +1,162 @@
+{
+  "o-9q8z-goldengateferry/angel-island-from-san-francisco.ics": {
+    "gtfs_route": "GF:AISF",
+    "direction": "from-hub",
+    "terminals": [
+      "GF:43002"
+    ]
+  },
+  "o-9q8z-goldengateferry/angel-island-to-san-francisco.ics": {
+    "gtfs_route": "GF:AISF",
+    "direction": "to-hub",
+    "terminals": [
+      "GF:43002"
+    ]
+  },
+  "o-9q8z-goldengateferry/larkspur-from-san-francisco.ics": {
+    "gtfs_route": "GF:LSSF",
+    "direction": "from-hub",
+    "terminals": [
+      "GF:43004"
+    ]
+  },
+  "o-9q8z-goldengateferry/larkspur-to-san-francisco.ics": {
+    "gtfs_route": "GF:LSSF",
+    "direction": "to-hub",
+    "terminals": [
+      "GF:43004"
+    ]
+  },
+  "o-9q8z-goldengateferry/sausalito-from-san-francisco.ics": {
+    "gtfs_route": "GF:SSSF",
+    "direction": "from-hub",
+    "terminals": [
+      "GF:43003"
+    ]
+  },
+  "o-9q8z-goldengateferry/sausalito-to-san-francisco.ics": {
+    "gtfs_route": "GF:SSSF",
+    "direction": "to-hub",
+    "terminals": [
+      "GF:43003"
+    ]
+  },
+  "o-9q8z-goldengateferry/tiburon-from-san-francisco.ics": {
+    "gtfs_route": "GF:TBSF",
+    "direction": "from-hub",
+    "terminals": [
+      "GF:43007"
+    ]
+  },
+  "o-9q8z-goldengateferry/tiburon-to-san-francisco.ics": {
+    "gtfs_route": "GF:TBSF",
+    "direction": "to-hub",
+    "terminals": [
+      "GF:43007"
+    ]
+  },
+  "o-9q9p-sanfranciscobayferry/alameda-seaplane-from-san-francisco.ics": {
+    "gtfs_route": "SB:SEA",
+    "direction": "from-hub",
+    "terminals": [
+      "7207"
+    ]
+  },
+  "o-9q9p-sanfranciscobayferry/alameda-seaplane-to-san-francisco.ics": {
+    "gtfs_route": "SB:SEA",
+    "direction": "to-hub",
+    "terminals": [
+      "7207"
+    ]
+  },
+  "o-9q9p-sanfranciscobayferry/harbor-bay-from-san-francisco.ics": {
+    "gtfs_route": "SB:HB",
+    "direction": "from-hub",
+    "terminals": [
+      "7206"
+    ]
+  },
+  "o-9q9p-sanfranciscobayferry/harbor-bay-to-san-francisco.ics": {
+    "gtfs_route": "SB:HB",
+    "direction": "to-hub",
+    "terminals": [
+      "7206"
+    ]
+  },
+  "o-9q9p-sanfranciscobayferry/oakland-alameda-from-san-francisco.ics": {
+    "gtfs_route": "SB:OA",
+    "direction": "from-hub",
+    "terminals": [
+      "7208",
+      "7209"
+    ]
+  },
+  "o-9q9p-sanfranciscobayferry/oakland-alameda-to-san-francisco.ics": {
+    "gtfs_route": "SB:OA",
+    "direction": "to-hub",
+    "terminals": [
+      "7208",
+      "7209"
+    ]
+  },
+  "o-9q9p-sanfranciscobayferry/oakland-alameda-water-shuttle-to-alameda-landing.ics": {
+    "gtfs_route": "SB:OAS",
+    "direction": "from-hub",
+    "terminals": [
+      "7216"
+    ]
+  },
+  "o-9q9p-sanfranciscobayferry/oakland-alameda-water-shuttle-to-jack-london-square.ics": {
+    "gtfs_route": "SB:OAS",
+    "direction": "to-hub",
+    "terminals": [
+      "7216"
+    ]
+  },
+  "o-9q9p-sanfranciscobayferry/richmond-from-san-francisco.ics": {
+    "gtfs_route": "SB:RCH",
+    "direction": "from-hub",
+    "terminals": [
+      "7211"
+    ]
+  },
+  "o-9q9p-sanfranciscobayferry/richmond-to-san-francisco.ics": {
+    "gtfs_route": "SB:RCH",
+    "direction": "to-hub",
+    "terminals": [
+      "7211"
+    ]
+  },
+  "o-9q9p-sanfranciscobayferry/south-san-francisco-to-east-bay.ics": {
+    "gtfs_route": "SB:SSF",
+    "direction": "from-hub",
+    "terminals": [
+      "7208",
+      "7209"
+    ]
+  },
+  "o-9q9p-sanfranciscobayferry/south-san-francisco-to-south-san-francisco.ics": {
+    "gtfs_route": "SB:SSF",
+    "direction": "to-hub",
+    "terminals": [
+      "7208",
+      "7209"
+    ]
+  },
+  "o-9q9p-sanfranciscobayferry/vallejo-from-san-francisco.ics": {
+    "gtfs_route": "SB:VJO",
+    "direction": "from-hub",
+    "terminals": [
+      "7212",
+      "7213"
+    ]
+  },
+  "o-9q9p-sanfranciscobayferry/vallejo-to-san-francisco.ics": {
+    "gtfs_route": "SB:VJO",
+    "direction": "to-hub",
+    "terminals": [
+      "7212",
+      "7213"
+    ]
+  }
+}

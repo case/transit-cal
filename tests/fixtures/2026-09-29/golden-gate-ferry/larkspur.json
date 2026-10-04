@@ -1,0 +1,92 @@
+{
+  "operator": "golden-gate-ferry",
+  "route": "larkspur",
+  "gtfs_feed": "54d9f7b68b46dc27c603d7f8e782a68977ee29f2",
+  "sources": ["https://www.goldengate.org/ajax/PatternStream/ajax.aspx?F=LoadSchedules&ScheduleId=216", "https://www.goldengate.org/ajax/PatternStream/ajax.aspx?F=LoadSchedules&ScheduleId=218"],
+  "source_sha256": "8461d29fc0e94d1dc4870edfd0fcaedbad022f31621128f24db8728a1ddab27d",
+  "captured": "2026-09-29",
+  "ends_only": true,
+  "no_service_dates": ["2026-11-26"],
+  "tables": [
+    {
+      "title": "Larkspur to San Francisco, weekday",
+      "direction": "to-hub",
+      "dates": ["2026-09-29", "2026-09-30", "2026-10-02"],
+      "columns": [["GF:43004", "depart"], ["mtc:san-francisco-ferry-terminal", "arrive"]],
+      "legs": [
+        [["GF:43004", "depart", "05:45"], ["mtc:san-francisco-ferry-terminal", "arrive", "06:20"]],
+        [["GF:43004", "depart", "06:30"], ["mtc:san-francisco-ferry-terminal", "arrive", "07:05"]],
+        [["GF:43004", "depart", "07:15"], ["mtc:san-francisco-ferry-terminal", "arrive", "07:50"]],
+        [["GF:43004", "depart", "07:55"], ["mtc:san-francisco-ferry-terminal", "arrive", "08:30"]],
+        [["GF:43004", "depart", "08:40"], ["mtc:san-francisco-ferry-terminal", "arrive", "09:15"]],
+        [["GF:43004", "depart", "09:25"], ["mtc:san-francisco-ferry-terminal", "arrive", "10:00"]],
+        [["GF:43004", "depart", "10:10"], ["mtc:san-francisco-ferry-terminal", "arrive", "10:45"]],
+        [["GF:43004", "depart", "11:50"], ["mtc:san-francisco-ferry-terminal", "arrive", "12:25"]],
+        [["GF:43004", "depart", "13:00"], ["mtc:san-francisco-ferry-terminal", "arrive", "13:35"]],
+        [["GF:43004", "depart", "14:10"], ["mtc:san-francisco-ferry-terminal", "arrive", "14:45"]],
+        [["GF:43004", "depart", "15:05"], ["mtc:san-francisco-ferry-terminal", "arrive", "15:40"]],
+        [["GF:43004", "depart", "15:45"], ["mtc:san-francisco-ferry-terminal", "arrive", "16:20"]],
+        [["GF:43004", "depart", "16:35"], ["mtc:san-francisco-ferry-terminal", "arrive", "17:10"]],
+        [["GF:43004", "depart", "17:15"], ["mtc:san-francisco-ferry-terminal", "arrive", "17:50"]],
+        [["GF:43004", "depart", "18:10"], ["mtc:san-francisco-ferry-terminal", "arrive", "18:45"]],
+        [["GF:43004", "depart", "19:15"], ["mtc:san-francisco-ferry-terminal", "arrive", "19:50"]]
+      ]
+    },
+    {
+      "title": "San Francisco to Larkspur, weekday",
+      "direction": "from-hub",
+      "dates": ["2026-09-29", "2026-09-30", "2026-10-02"],
+      "columns": [["mtc:san-francisco-ferry-terminal", "depart"], ["GF:43004", "arrive"]],
+      "legs": [
+        [["mtc:san-francisco-ferry-terminal", "depart", "06:30"], ["GF:43004", "arrive", "07:05"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "07:15"], ["GF:43004", "arrive", "07:45"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "08:00"], ["GF:43004", "arrive", "08:30"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "08:40"], ["GF:43004", "arrive", "09:15"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "09:25"], ["GF:43004", "arrive", "10:00"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "10:10"], ["GF:43004", "arrive", "10:45"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "11:50"], ["GF:43004", "arrive", "12:25"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "12:35"], ["GF:43004", "arrive", "13:10"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "13:45"], ["GF:43004", "arrive", "14:20"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "14:55"], ["GF:43004", "arrive", "15:30"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "15:50"], ["GF:43004", "arrive", "16:25"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "16:30"], ["GF:43004", "arrive", "17:05"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "17:25"], ["GF:43004", "arrive", "18:00"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "17:35"], ["GF:43004", "arrive", "18:50"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "18:00"], ["GF:43004", "arrive", "18:35"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "18:55"], ["GF:43004", "arrive", "19:25"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "20:00"], ["GF:43004", "arrive", "20:30"]]
+      ]
+    },
+    {
+      "title": "Larkspur to San Francisco, sat-sun-holiday",
+      "direction": "to-hub",
+      "dates": ["2026-10-03", "2026-10-04", "2026-11-27"],
+      "columns": [["GF:43004", "depart"], ["mtc:san-francisco-ferry-terminal", "arrive"]],
+      "legs": [
+        [["GF:43004", "depart", "09:00"], ["mtc:san-francisco-ferry-terminal", "arrive", "09:55"]],
+        [["GF:43004", "depart", "10:00"], ["mtc:san-francisco-ferry-terminal", "arrive", "10:35"]],
+        [["GF:43004", "depart", "11:30"], ["mtc:san-francisco-ferry-terminal", "arrive", "12:05"]],
+        [["GF:43004", "depart", "13:30"], ["mtc:san-francisco-ferry-terminal", "arrive", "14:05"]],
+        [["GF:43004", "depart", "15:00"], ["mtc:san-francisco-ferry-terminal", "arrive", "15:35"]],
+        [["GF:43004", "depart", "16:30"], ["mtc:san-francisco-ferry-terminal", "arrive", "17:05"]],
+        [["GF:43004", "depart", "18:00"], ["mtc:san-francisco-ferry-terminal", "arrive", "18:35"]]
+      ]
+    },
+    {
+      "title": "San Francisco to Larkspur, sat-sun-holiday",
+      "direction": "from-hub",
+      "dates": ["2026-10-03", "2026-10-04", "2026-11-27"],
+      "columns": [["mtc:san-francisco-ferry-terminal", "depart"], ["GF:43004", "arrive"]],
+      "legs": [
+        [["mtc:san-francisco-ferry-terminal", "depart", "10:45"], ["GF:43004", "arrive", "11:20"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "12:15"], ["GF:43004", "arrive", "12:50"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "14:15"], ["GF:43004", "arrive", "14:50"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "15:45"], ["GF:43004", "arrive", "16:20"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "17:15"], ["GF:43004", "arrive", "17:50"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "18:00"], ["GF:43004", "arrive", "18:55"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "18:45"], ["GF:43004", "arrive", "19:20"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "19:50"], ["GF:43004", "arrive", "20:45"]]
+      ]
+    }
+  ]
+}

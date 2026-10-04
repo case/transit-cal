@@ -1,0 +1,37 @@
+{
+  "operator": "sf-bay-ferry",
+  "route": "south-san-francisco",
+  "gtfs_feed": "54d9f7b68b46dc27c603d7f8e782a68977ee29f2",
+  "sources": ["OnlineSchedules_South-SF_8.5x11_7-2026.pdf"],
+  "source_sha256": "e4d60f42394149470f687c66ebd5e5692b6d71fc60cca1f279305e886c33932f",
+  "effective": "2026-07-01",
+  "revision": "06/02/26",
+  "ends_only": false,
+  "no_service_dates": [],
+  "tables": [
+    {
+      "title": "East Bay to South San Francisco Mon.–Fri.",
+      "direction": "to-hub",
+      "dates": ["2026-09-29", "2026-09-30", "2026-10-02"],
+      "columns": [["7208", "depart"], ["7209", "depart"], ["7205", "arrive"]],
+      "known_differences": [{ "timetable": [["7208", "depart", "07:45"], ["7209", "depart", "08:05"], ["7205", "arrive", "08:45"]], "gtfs": [["7208", "depart", "07:45"], ["7209", "depart", "08:05"], ["7205", "arrive", "08:40"]], "note": "July 2026 PDF (Rev 06/02/26) says 8:45; GTFS says 8:40." }],
+      "legs": [
+        [["7208", "depart", "06:50"], ["7209", "depart", "07:05"], ["7205", "arrive", "07:45"]],
+        [["7208", "depart", "07:45"], ["7209", "depart", "08:05"], ["7205", "arrive", "08:45"]],
+        [["7209", "depart", "09:05"], ["7205", "arrive", "09:45"]],
+        [["7209", "depart", "16:20"], ["7208", "depart", "16:35"], ["7205", "arrive", "17:15"]]
+      ]
+    },
+    {
+      "title": "South San Francisco to East Bay Mon.–Fri.",
+      "direction": "from-hub",
+      "dates": ["2026-09-29", "2026-09-30", "2026-10-02"],
+      "columns": [["7205", "depart"], ["7209", "arrive"], ["7208", "arrive"]],
+      "legs": [
+        [["7205", "depart", "15:30"], ["7209", "arrive", "16:10"], ["7208", "arrive", "16:30"]],
+        [["7205", "depart", "16:20"], ["7209", "arrive", "17:00"], ["7208", "arrive", "17:15"]],
+        [["7205", "depart", "17:30"], ["7209", "arrive", "18:10"], ["7208", "arrive", "18:30"]]
+      ]
+    }
+  ]
+}

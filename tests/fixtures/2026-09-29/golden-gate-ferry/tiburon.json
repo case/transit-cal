@@ -1,0 +1,64 @@
+{
+  "operator": "golden-gate-ferry",
+  "route": "tiburon",
+  "gtfs_feed": "54d9f7b68b46dc27c603d7f8e782a68977ee29f2",
+  "sources": ["https://www.goldengate.org/ajax/PatternStream/ajax.aspx?F=LoadSchedules&ScheduleId=220", "https://www.goldengate.org/ajax/PatternStream/ajax.aspx?F=LoadSchedules&ScheduleId=2221"],
+  "source_sha256": "8461d29fc0e94d1dc4870edfd0fcaedbad022f31621128f24db8728a1ddab27d",
+  "captured": "2026-09-29",
+  "ends_only": true,
+  "no_service_dates": ["2026-11-26"],
+  "tables": [
+    {
+      "title": "Tiburon to San Francisco, weekday",
+      "direction": "to-hub",
+      "dates": ["2026-09-29", "2026-09-30", "2026-10-02"],
+      "columns": [["GF:43007", "depart"], ["mtc:san-francisco-ferry-terminal", "arrive"]],
+      "legs": [
+        [["GF:43007", "depart", "06:50"], ["mtc:san-francisco-ferry-terminal", "arrive", "07:20"]],
+        [["GF:43007", "depart", "08:10"], ["mtc:san-francisco-ferry-terminal", "arrive", "08:40"]],
+        [["GF:43007", "depart", "09:35"], ["mtc:san-francisco-ferry-terminal", "arrive", "10:05"]],
+        [["GF:43007", "depart", "11:50"], ["mtc:san-francisco-ferry-terminal", "arrive", "12:20"]],
+        [["GF:43007", "depart", "13:15"], ["mtc:san-francisco-ferry-terminal", "arrive", "13:45"]],
+        [["GF:43007", "depart", "16:30"], ["mtc:san-francisco-ferry-terminal", "arrive", "17:25"]]
+      ]
+    },
+    {
+      "title": "San Francisco to Tiburon, weekday",
+      "direction": "from-hub",
+      "dates": ["2026-09-29", "2026-09-30", "2026-10-02"],
+      "columns": [["mtc:san-francisco-ferry-terminal", "depart"], ["GF:43007", "arrive"]],
+      "legs": [
+        [["mtc:san-francisco-ferry-terminal", "depart", "07:30"], ["GF:43007", "arrive", "08:00"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "08:55"], ["GF:43007", "arrive", "09:25"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "10:55"], ["GF:43007", "arrive", "11:45"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "12:25"], ["GF:43007", "arrive", "12:55"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "15:50"], ["GF:43007", "arrive", "16:20"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "17:35"], ["GF:43007", "arrive", "18:05"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "19:15"], ["GF:43007", "arrive", "20:05"]]
+      ]
+    },
+    {
+      "title": "Tiburon to San Francisco, sat-sun-holiday",
+      "direction": "to-hub",
+      "dates": ["2026-10-03", "2026-10-04", "2026-11-27"],
+      "columns": [["GF:43007", "depart"], ["mtc:san-francisco-ferry-terminal", "arrive"]],
+      "legs": [
+        [["GF:43007", "depart", "11:50"], ["mtc:san-francisco-ferry-terminal", "arrive", "12:20"]],
+        [["GF:43007", "depart", "12:55"], ["mtc:san-francisco-ferry-terminal", "arrive", "13:25"]],
+        [["GF:43007", "depart", "14:45"], ["mtc:san-francisco-ferry-terminal", "arrive", "15:50"]],
+        [["GF:43007", "depart", "17:15"], ["mtc:san-francisco-ferry-terminal", "arrive", "17:45"]]
+      ]
+    },
+    {
+      "title": "San Francisco to Tiburon, sat-sun-holiday",
+      "direction": "from-hub",
+      "dates": ["2026-10-03", "2026-10-04", "2026-11-27"],
+      "columns": [["mtc:san-francisco-ferry-terminal", "depart"], ["GF:43007", "arrive"]],
+      "legs": [
+        [["mtc:san-francisco-ferry-terminal", "depart", "12:15"], ["GF:43007", "arrive", "12:45"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "14:05"], ["GF:43007", "arrive", "14:35"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "16:05"], ["GF:43007", "arrive", "17:05"]]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "operator": "sf-bay-ferry",
+  "route": "vallejo",
+  "gtfs_feed": "54d9f7b68b46dc27c603d7f8e782a68977ee29f2",
+  "sources": ["OnlineSchedules_8.5x11_Vallejo-1.pdf"],
+  "source_sha256": "12feaee4367bcec41746439163ddc7c93eaaaed2789d5aa2f7a8664e394f0d64",
+  "effective": "2026-03-09",
+  "revision": "02/19/26",
+  "ends_only": false,
+  "no_service_dates": [],
+  "tables": [
+    {
+      "title": "Vallejo to San Francisco Mon.–Fri.",
+      "direction": "to-hub",
+      "dates": ["2026-09-29", "2026-09-30", "2026-10-02"],
+      "columns": [["7213", "depart"], ["7212", "depart"], ["mtc:san-francisco-ferry-terminal", "arrive"]],
+      "legs": [
+        [["7213", "depart", "05:15"], ["7212", "depart", "05:30"], ["mtc:san-francisco-ferry-terminal", "arrive", "06:30"]],
+        [["7213", "depart", "05:45"], ["7212", "depart", "06:00"], ["mtc:san-francisco-ferry-terminal", "arrive", "07:00"]],
+        [["7213", "depart", "07:00"], ["7212", "depart", "07:15"], ["mtc:san-francisco-ferry-terminal", "arrive", "08:15"]],
+        [["7212", "depart", "07:45"], ["mtc:san-francisco-ferry-terminal", "arrive", "08:45"]],
+        [["7212", "depart", "08:15"], ["mtc:san-francisco-ferry-terminal", "arrive", "09:15"]],
+        [["7212", "depart", "09:30"], ["mtc:san-francisco-ferry-terminal", "arrive", "10:30"]],
+        [["7212", "depart", "11:00"], ["mtc:san-francisco-ferry-terminal", "arrive", "12:00"]],
+        [["7213", "depart", "13:05"], ["7212", "depart", "13:15"], ["mtc:san-francisco-ferry-terminal", "arrive", "14:15"]],
+        [["7213", "depart", "14:10"], ["7212", "depart", "14:20"], ["mtc:san-francisco-ferry-terminal", "arrive", "15:20"]],
+        [["7212", "depart", "16:10"], ["mtc:san-francisco-ferry-terminal", "arrive", "17:10"]],
+        [["7212", "depart", "16:50"], ["mtc:san-francisco-ferry-terminal", "arrive", "17:50"]],
+        [["7212", "depart", "18:25"], ["mtc:san-francisco-ferry-terminal", "arrive", "19:25"]],
+        [["7212", "depart", "19:05"], ["mtc:san-francisco-ferry-terminal", "arrive", "20:05"]]
+      ]
+    },
+    {
+      "title": "San Francisco to Vallejo Mon.–Fri.",
+      "direction": "from-hub",
+      "dates": ["2026-09-29", "2026-09-30", "2026-10-02"],
+      "columns": [["mtc:san-francisco-ferry-terminal", "depart"], ["7212", "arrive"], ["7213", "arrive"]],
+      "legs": [
+        [["mtc:san-francisco-ferry-terminal", "depart", "06:35"], ["7212", "arrive", "07:35"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "07:05"], ["7212", "arrive", "08:05"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "08:20"], ["7212", "arrive", "09:20"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "09:50"], ["7212", "arrive", "10:50"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "11:05"], ["7212", "arrive", "12:05"], ["7213", "arrive", "12:15"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "11:30"], ["7212", "arrive", "12:30"], ["7213", "arrive", "12:40"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "12:10"], ["7212", "arrive", "13:10"], ["7213", "arrive", "13:20"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "14:20"], ["7212", "arrive", "15:20"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "15:40"], ["7212", "arrive", "16:40"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "16:35"], ["7212", "arrive", "17:35"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "17:20"], ["7212", "arrive", "18:20"], ["7213", "arrive", "18:30"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "18:00"], ["7212", "arrive", "19:00"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "19:30"], ["7212", "arrive", "20:30"], ["7213", "arrive", "20:40"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "20:10"], ["7212", "arrive", "21:10"], ["7213", "arrive", "21:20"]]
+      ]
+    },
+    {
+      "title": "Vallejo to San Francisco Sat. & Sun.",
+      "direction": "to-hub",
+      "dates": ["2026-10-03", "2026-10-04"],
+      "columns": [["7213", "depart"], ["7212", "depart"], ["mtc:san-francisco-ferry-terminal", "arrive"]],
+      "legs": [
+        [["7213", "depart", "09:00"], ["7212", "depart", "09:15"], ["mtc:san-francisco-ferry-terminal", "arrive", "10:15"]],
+        [["7213", "depart", "09:55"], ["7212", "depart", "10:20"], ["mtc:san-francisco-ferry-terminal", "arrive", "11:25"]],
+        [["7212", "depart", "11:35"], ["mtc:san-francisco-ferry-terminal", "arrive", "12:35"]],
+        [["7212", "depart", "12:40"], ["mtc:san-francisco-ferry-terminal", "arrive", "13:40"]],
+        [["7212", "depart", "14:45"], ["mtc:san-francisco-ferry-terminal", "arrive", "15:55"]],
+        [["7212", "depart", "15:50"], ["mtc:san-francisco-ferry-terminal", "arrive", "16:50"]],
+        [["7213", "depart", "16:25"], ["7212", "depart", "16:40"], ["mtc:san-francisco-ferry-terminal", "arrive", "17:40"]],
+        [["7212", "depart", "19:35"], ["mtc:san-francisco-ferry-terminal", "arrive", "20:35"]]
+      ]
+    },
+    {
+      "title": "San Francisco to Vallejo Sat. & Sun.",
+      "direction": "from-hub",
+      "dates": ["2026-10-03", "2026-10-04"],
+      "columns": [["mtc:san-francisco-ferry-terminal", "depart"], ["7212", "arrive"], ["7213", "arrive"]],
+      "legs": [
+        [["mtc:san-francisco-ferry-terminal", "depart", "10:25"], ["7212", "arrive", "11:25"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "11:35"], ["7212", "arrive", "12:35"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "13:40"], ["7212", "arrive", "14:40"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "14:45"], ["7212", "arrive", "15:45"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "16:05"], ["7212", "arrive", "17:05"], ["7213", "arrive", "17:15"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "17:00"], ["7212", "arrive", "18:00"], ["7213", "arrive", "18:15"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "18:30"], ["7212", "arrive", "19:30"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "20:40"], ["7212", "arrive", "21:40"], ["7213", "arrive", "21:55"]]
+      ]
+    }
+  ]
+}

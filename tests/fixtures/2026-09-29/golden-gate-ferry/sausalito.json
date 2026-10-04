@@ -1,0 +1,68 @@
+{
+  "operator": "golden-gate-ferry",
+  "route": "sausalito",
+  "gtfs_feed": "54d9f7b68b46dc27c603d7f8e782a68977ee29f2",
+  "sources": ["https://www.goldengate.org/ajax/PatternStream/ajax.aspx?F=LoadSchedules&ScheduleId=84", "https://www.goldengate.org/ajax/PatternStream/ajax.aspx?F=LoadSchedules&ScheduleId=85"],
+  "source_sha256": "8461d29fc0e94d1dc4870edfd0fcaedbad022f31621128f24db8728a1ddab27d",
+  "captured": "2026-09-29",
+  "ends_only": true,
+  "no_service_dates": ["2026-11-26"],
+  "tables": [
+    {
+      "title": "Sausalito to San Francisco, weekday",
+      "direction": "to-hub",
+      "dates": ["2026-09-29", "2026-09-30", "2026-10-02"],
+      "columns": [["GF:43003", "depart"], ["mtc:san-francisco-ferry-terminal", "arrive"]],
+      "legs": [
+        [["GF:43003", "depart", "07:05"], ["mtc:san-francisco-ferry-terminal", "arrive", "07:35"]],
+        [["GF:43003", "depart", "08:15"], ["mtc:san-francisco-ferry-terminal", "arrive", "08:45"]],
+        [["GF:43003", "depart", "10:55"], ["mtc:san-francisco-ferry-terminal", "arrive", "11:25"]],
+        [["GF:43003", "depart", "13:35"], ["mtc:san-francisco-ferry-terminal", "arrive", "14:05"]],
+        [["GF:43003", "depart", "15:35"], ["mtc:san-francisco-ferry-terminal", "arrive", "16:05"]],
+        [["GF:43003", "depart", "17:05"], ["mtc:san-francisco-ferry-terminal", "arrive", "17:35"]],
+        [["GF:43003", "depart", "18:30"], ["mtc:san-francisco-ferry-terminal", "arrive", "19:00"]]
+      ]
+    },
+    {
+      "title": "San Francisco to Sausalito, weekday",
+      "direction": "from-hub",
+      "dates": ["2026-09-29", "2026-09-30", "2026-10-02"],
+      "columns": [["mtc:san-francisco-ferry-terminal", "depart"], ["GF:43003", "arrive"]],
+      "legs": [
+        [["mtc:san-francisco-ferry-terminal", "depart", "07:40"], ["GF:43003", "arrive", "08:10"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "10:15"], ["GF:43003", "arrive", "10:45"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "12:10"], ["GF:43003", "arrive", "12:40"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "14:45"], ["GF:43003", "arrive", "15:15"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "16:20"], ["GF:43003", "arrive", "16:50"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "17:45"], ["GF:43003", "arrive", "18:15"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "19:15"], ["GF:43003", "arrive", "19:45"]]
+      ]
+    },
+    {
+      "title": "Sausalito to San Francisco, sat-sun-holiday",
+      "direction": "to-hub",
+      "dates": ["2026-10-03", "2026-10-04", "2026-11-27"],
+      "columns": [["GF:43003", "depart"], ["mtc:san-francisco-ferry-terminal", "arrive"]],
+      "legs": [
+        [["GF:43003", "depart", "11:30"], ["mtc:san-francisco-ferry-terminal", "arrive", "12:00"]],
+        [["GF:43003", "depart", "13:25"], ["mtc:san-francisco-ferry-terminal", "arrive", "13:55"]],
+        [["GF:43003", "depart", "15:10"], ["mtc:san-francisco-ferry-terminal", "arrive", "15:40"]],
+        [["GF:43003", "depart", "17:00"], ["mtc:san-francisco-ferry-terminal", "arrive", "17:30"]],
+        [["GF:43003", "depart", "18:55"], ["mtc:san-francisco-ferry-terminal", "arrive", "19:25"]]
+      ]
+    },
+    {
+      "title": "San Francisco to Sausalito, sat-sun-holiday",
+      "direction": "from-hub",
+      "dates": ["2026-10-03", "2026-10-04", "2026-11-27"],
+      "columns": [["mtc:san-francisco-ferry-terminal", "depart"], ["GF:43003", "arrive"]],
+      "legs": [
+        [["mtc:san-francisco-ferry-terminal", "depart", "10:15"], ["GF:43003", "arrive", "11:15"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "12:35"], ["GF:43003", "arrive", "13:05"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "14:15"], ["GF:43003", "arrive", "14:45"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "16:00"], ["GF:43003", "arrive", "16:30"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "17:50"], ["GF:43003", "arrive", "18:20"]]
+      ]
+    }
+  ]
+}

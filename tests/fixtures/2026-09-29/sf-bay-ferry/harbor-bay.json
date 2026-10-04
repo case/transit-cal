@@ -1,0 +1,49 @@
+{
+  "operator": "sf-bay-ferry",
+  "route": "harbor-bay",
+  "gtfs_feed": "54d9f7b68b46dc27c603d7f8e782a68977ee29f2",
+  "sources": ["OnlineSchedules_HB_8.5x11_7-2026.pdf"],
+  "source_sha256": "1e1d293bd642bf194a407e44681fbede39e09526f966f524413e876414d36e17",
+  "effective": "2026-07-01",
+  "revision": "06/02/26",
+  "ends_only": false,
+  "no_service_dates": [],
+  "tables": [
+    {
+      "title": "Harbor Bay to San Francisco Mon.–Fri.",
+      "direction": "to-hub",
+      "dates": ["2026-09-29", "2026-09-30", "2026-10-02"],
+      "columns": [["7206", "depart"], ["mtc:san-francisco-ferry-terminal", "arrive"]],
+      "legs": [
+        [["7206", "depart", "06:30"], ["mtc:san-francisco-ferry-terminal", "arrive", "06:55"]],
+        [["7206", "depart", "07:30"], ["mtc:san-francisco-ferry-terminal", "arrive", "07:55"]],
+        [["7206", "depart", "08:30"], ["mtc:san-francisco-ferry-terminal", "arrive", "08:55"]],
+        [["7206", "depart", "09:30"], ["mtc:san-francisco-ferry-terminal", "arrive", "09:55"]],
+        [["7206", "depart", "10:30"], ["mtc:san-francisco-ferry-terminal", "arrive", "10:55"]],
+        [["7206", "depart", "11:30"], ["mtc:san-francisco-ferry-terminal", "arrive", "11:55"]],
+        [["7206", "depart", "16:10"], ["mtc:san-francisco-ferry-terminal", "arrive", "16:35"]],
+        [["7206", "depart", "17:10"], ["mtc:san-francisco-ferry-terminal", "arrive", "17:35"]],
+        [["7206", "depart", "18:10"], ["mtc:san-francisco-ferry-terminal", "arrive", "18:35"]],
+        [["7206", "depart", "19:55"], ["mtc:san-francisco-ferry-terminal", "arrive", "20:20"]]
+      ]
+    },
+    {
+      "title": "San Francisco to Harbor Bay Mon.–Fri.",
+      "direction": "from-hub",
+      "dates": ["2026-09-29", "2026-09-30", "2026-10-02"],
+      "columns": [["mtc:san-francisco-ferry-terminal", "depart"], ["7206", "arrive"]],
+      "legs": [
+        [["mtc:san-francisco-ferry-terminal", "depart", "07:00"], ["7206", "arrive", "07:25"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "08:00"], ["7206", "arrive", "08:25"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "09:00"], ["7206", "arrive", "09:25"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "09:55"], ["7206", "arrive", "10:20"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "10:40"], ["7206", "arrive", "11:05"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "13:25"], ["7206", "arrive", "13:50"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "15:40"], ["7206", "arrive", "16:05"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "16:40"], ["7206", "arrive", "17:05"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "17:40"], ["7206", "arrive", "18:05"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "18:40"], ["7206", "arrive", "19:05"]]
+      ]
+    }
+  ]
+}

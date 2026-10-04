@@ -1,0 +1,58 @@
+{
+  "operator": "golden-gate-ferry",
+  "route": "angel-island",
+  "gtfs_feed": "54d9f7b68b46dc27c603d7f8e782a68977ee29f2",
+  "sources": ["https://www.goldengate.org/ajax/PatternStream/ajax.aspx?F=LoadSchedules&ScheduleId=2993", "https://www.goldengate.org/ajax/PatternStream/ajax.aspx?F=LoadSchedules&ScheduleId=2994"],
+  "source_sha256": "8461d29fc0e94d1dc4870edfd0fcaedbad022f31621128f24db8728a1ddab27d",
+  "captured": "2026-09-29",
+  "ends_only": true,
+  "no_service_dates": ["2026-11-26"],
+  "tables": [
+    {
+      "title": "Angel Island to San Francisco, weekday",
+      "direction": "to-hub",
+      "dates": ["2026-09-29", "2026-09-30", "2026-10-02"],
+      "columns": [["GF:43002", "depart"], ["mtc:san-francisco-ferry-terminal", "arrive"]],
+      "legs": [
+        [["GF:43002", "depart", "10:10"], ["mtc:san-francisco-ferry-terminal", "arrive", "10:40"]],
+        [["GF:43002", "depart", "11:35"], ["mtc:san-francisco-ferry-terminal", "arrive", "12:20"]],
+        [["GF:43002", "depart", "14:35"], ["mtc:san-francisco-ferry-terminal", "arrive", "15:05"]],
+        [["GF:43002", "depart", "16:55"], ["mtc:san-francisco-ferry-terminal", "arrive", "17:25"]]
+      ]
+    },
+    {
+      "title": "San Francisco to Angel Island, weekday",
+      "direction": "from-hub",
+      "dates": ["2026-09-29", "2026-09-30", "2026-10-02"],
+      "columns": [["mtc:san-francisco-ferry-terminal", "depart"], ["GF:43002", "arrive"]],
+      "legs": [
+        [["mtc:san-francisco-ferry-terminal", "depart", "09:25"], ["GF:43002", "arrive", "09:55"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "10:55"], ["GF:43002", "arrive", "11:25"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "13:55"], ["GF:43002", "arrive", "14:25"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "15:50"], ["GF:43002", "arrive", "16:40"]]
+      ]
+    },
+    {
+      "title": "Angel Island to San Francisco, sat-sun-holiday",
+      "direction": "to-hub",
+      "dates": ["2026-10-03", "2026-10-04", "2026-11-27"],
+      "columns": [["GF:43002", "depart"], ["mtc:san-francisco-ferry-terminal", "arrive"]],
+      "legs": [
+        [["GF:43002", "depart", "10:55"], ["mtc:san-francisco-ferry-terminal", "arrive", "12:00"]],
+        [["GF:43002", "depart", "15:20"], ["mtc:san-francisco-ferry-terminal", "arrive", "15:50"]],
+        [["GF:43002", "depart", "16:50"], ["mtc:san-francisco-ferry-terminal", "arrive", "17:45"]]
+      ]
+    },
+    {
+      "title": "San Francisco to Angel Island, sat-sun-holiday",
+      "direction": "from-hub",
+      "dates": ["2026-10-03", "2026-10-04", "2026-11-27"],
+      "columns": [["mtc:san-francisco-ferry-terminal", "depart"], ["GF:43002", "arrive"]],
+      "legs": [
+        [["mtc:san-francisco-ferry-terminal", "depart", "10:15"], ["GF:43002", "arrive", "10:45"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "14:05"], ["GF:43002", "arrive", "15:00"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "16:05"], ["GF:43002", "arrive", "16:35"]]
+      ]
+    }
+  ]
+}

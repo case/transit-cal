@@ -1,0 +1,64 @@
+{
+  "operator": "sf-bay-ferry",
+  "route": "alameda-seaplane",
+  "gtfs_feed": "54d9f7b68b46dc27c603d7f8e782a68977ee29f2",
+  "sources": ["OnlineSchedules_SEA_8.5x11_7-2026.pdf"],
+  "source_sha256": "b7f00ffa32ddc1df95de28b8b087d6331cb75aa5996538c112c66564ef0b86f2",
+  "effective": "2026-07-01",
+  "revision": "06/02/26",
+  "ends_only": false,
+  "no_service_dates": [],
+  "tables": [
+    {
+      "title": "Alameda to San Francisco Mon.–Fri.",
+      "direction": "to-hub",
+      "dates": ["2026-09-29", "2026-09-30", "2026-10-02"],
+      "columns": [["7207", "depart"], ["mtc:san-francisco-ferry-terminal", "arrive"]],
+      "legs": [
+        [["7207", "depart", "06:30"], ["mtc:san-francisco-ferry-terminal", "arrive", "06:50"]],
+        [["7207", "depart", "07:00"], ["mtc:san-francisco-ferry-terminal", "arrive", "07:20"]],
+        [["7207", "depart", "07:25"], ["mtc:san-francisco-ferry-terminal", "arrive", "07:45"]],
+        [["7207", "depart", "08:20"], ["mtc:san-francisco-ferry-terminal", "arrive", "08:40"]],
+        [["7207", "depart", "08:45"], ["mtc:san-francisco-ferry-terminal", "arrive", "09:05"]],
+        [["7207", "depart", "09:15"], ["mtc:san-francisco-ferry-terminal", "arrive", "09:35"]],
+        [["7207", "depart", "10:10"], ["mtc:san-francisco-ferry-terminal", "arrive", "10:30"]],
+        [["7207", "depart", "11:00"], ["mtc:san-francisco-ferry-terminal", "arrive", "11:20"]],
+        [["7207", "depart", "12:00"], ["mtc:san-francisco-ferry-terminal", "arrive", "12:20"]],
+        [["7207", "depart", "12:30"], ["mtc:san-francisco-ferry-terminal", "arrive", "12:50"]],
+        [["7207", "depart", "13:00"], ["mtc:san-francisco-ferry-terminal", "arrive", "13:20"]],
+        [["7207", "depart", "14:00"], ["mtc:san-francisco-ferry-terminal", "arrive", "14:20"]],
+        [["7207", "depart", "15:00"], ["mtc:san-francisco-ferry-terminal", "arrive", "15:20"]],
+        [["7207", "depart", "15:35"], ["mtc:san-francisco-ferry-terminal", "arrive", "15:55"]],
+        [["7207", "depart", "16:00"], ["mtc:san-francisco-ferry-terminal", "arrive", "16:20"]],
+        [["7207", "depart", "17:00"], ["mtc:san-francisco-ferry-terminal", "arrive", "17:20"]],
+        [["7207", "depart", "18:00"], ["mtc:san-francisco-ferry-terminal", "arrive", "18:20"]],
+        [["7207", "depart", "18:50"], ["mtc:san-francisco-ferry-terminal", "arrive", "19:10"]],
+        [["7207", "depart", "20:25"], ["mtc:san-francisco-ferry-terminal", "arrive", "20:45"]]
+      ]
+    },
+    {
+      "title": "San Francisco to Alameda Mon.–Fri.",
+      "direction": "from-hub",
+      "dates": ["2026-09-29", "2026-09-30", "2026-10-02"],
+      "columns": [["mtc:san-francisco-ferry-terminal", "depart"], ["7207", "arrive"]],
+      "legs": [
+        [["mtc:san-francisco-ferry-terminal", "depart", "06:55"], ["7207", "arrive", "07:15"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "07:50"], ["7207", "arrive", "08:10"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "08:45"], ["7207", "arrive", "09:05"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "10:25"], ["7207", "arrive", "10:45"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "11:35"], ["7207", "arrive", "11:55"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "12:00"], ["7207", "arrive", "12:20"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "13:00"], ["7207", "arrive", "13:20"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "14:30"], ["7207", "arrive", "14:50"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "15:30"], ["7207", "arrive", "15:50"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "16:30"], ["7207", "arrive", "16:50"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "17:30"], ["7207", "arrive", "17:50"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "18:25"], ["7207", "arrive", "18:45"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "19:00"], ["7207", "arrive", "19:20"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "20:10"], ["7207", "arrive", "20:30"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "21:05"], ["7207", "arrive", "21:25"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "22:30"], ["7207", "arrive", "22:50"]]
+      ]
+    }
+  ]
+}

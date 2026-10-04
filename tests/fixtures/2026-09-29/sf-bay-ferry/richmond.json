@@ -1,0 +1,84 @@
+{
+  "operator": "sf-bay-ferry",
+  "route": "richmond",
+  "gtfs_feed": "54d9f7b68b46dc27c603d7f8e782a68977ee29f2",
+  "sources": ["OnlineSchedules_RCH_8.5x11_7-2026.pdf"],
+  "source_sha256": "4fa02aa0d35a53d0ea8f5703709887fafdf7df60eb5e20d4c4e4be7d0ea9ef37",
+  "effective": "2026-07-01",
+  "revision": "06/02/26",
+  "ends_only": false,
+  "no_service_dates": [],
+  "tables": [
+    {
+      "title": "Richmond to San Francisco Mon.–Fri.",
+      "direction": "to-hub",
+      "dates": ["2026-09-29", "2026-09-30", "2026-10-02"],
+      "columns": [["7211", "depart"], ["mtc:san-francisco-ferry-terminal", "arrive"]],
+      "legs": [
+        [["7211", "depart", "06:30"], ["mtc:san-francisco-ferry-terminal", "arrive", "07:05"]],
+        [["7211", "depart", "07:30"], ["mtc:san-francisco-ferry-terminal", "arrive", "08:05"]],
+        [["7211", "depart", "08:00"], ["mtc:san-francisco-ferry-terminal", "arrive", "08:35"]],
+        [["7211", "depart", "08:55"], ["mtc:san-francisco-ferry-terminal", "arrive", "09:30"]],
+        [["7211", "depart", "10:40"], ["mtc:san-francisco-ferry-terminal", "arrive", "11:15"]],
+        [["7211", "depart", "12:00"], ["mtc:san-francisco-ferry-terminal", "arrive", "12:35"]],
+        [["7211", "depart", "14:05"], ["mtc:san-francisco-ferry-terminal", "arrive", "14:35"]],
+        [["7211", "depart", "15:40"], ["mtc:san-francisco-ferry-terminal", "arrive", "16:15"]],
+        [["7211", "depart", "16:45"], ["mtc:san-francisco-ferry-terminal", "arrive", "17:20"]],
+        [["7211", "depart", "17:10"], ["mtc:san-francisco-ferry-terminal", "arrive", "17:45"]],
+        [["7211", "depart", "18:10"], ["mtc:san-francisco-ferry-terminal", "arrive", "18:45"]],
+        [["7211", "depart", "19:25"], ["mtc:san-francisco-ferry-terminal", "arrive", "20:00"]],
+        [["7211", "depart", "20:25"], ["mtc:san-francisco-ferry-terminal", "arrive", "21:00"]],
+        [["7211", "depart", "20:40"], ["mtc:san-francisco-ferry-terminal", "arrive", "21:15"]]
+      ]
+    },
+    {
+      "title": "San Francisco to Richmond Mon.–Fri.",
+      "direction": "from-hub",
+      "dates": ["2026-09-29", "2026-09-30", "2026-10-02"],
+      "columns": [["mtc:san-francisco-ferry-terminal", "depart"], ["7211", "arrive"]],
+      "legs": [
+        [["mtc:san-francisco-ferry-terminal", "depart", "07:15"], ["7211", "arrive", "07:50"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "08:10"], ["7211", "arrive", "08:45"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "09:10"], ["7211", "arrive", "09:45"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "11:20"], ["7211", "arrive", "11:55"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "15:00"], ["7211", "arrive", "15:35"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "16:00"], ["7211", "arrive", "16:35"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "16:30"], ["7211", "arrive", "17:05"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "17:25"], ["7211", "arrive", "18:00"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "18:00"], ["7211", "arrive", "18:35"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "18:55"], ["7211", "arrive", "19:30"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "20:00"], ["7211", "arrive", "20:35"]]
+      ]
+    },
+    {
+      "title": "Richmond to San Francisco Sat. & Sun.",
+      "direction": "to-hub",
+      "dates": ["2026-10-03", "2026-10-04"],
+      "columns": [["7211", "depart"], ["mtc:san-francisco-ferry-terminal", "arrive"]],
+      "legs": [
+        [["7211", "depart", "08:55"], ["mtc:san-francisco-ferry-terminal", "arrive", "09:30"]],
+        [["7211", "depart", "10:20"], ["mtc:san-francisco-ferry-terminal", "arrive", "10:55"]],
+        [["7211", "depart", "12:25"], ["mtc:san-francisco-ferry-terminal", "arrive", "13:00"]],
+        [["7211", "depart", "16:15"], ["mtc:san-francisco-ferry-terminal", "arrive", "16:50"]],
+        [["7211", "depart", "18:40"], ["mtc:san-francisco-ferry-terminal", "arrive", "19:15"]],
+        [["7211", "depart", "20:05"], ["mtc:san-francisco-ferry-terminal", "arrive", "20:40"]],
+        [["7211", "depart", "21:30"], ["mtc:san-francisco-ferry-terminal", "arrive", "22:05"]]
+      ]
+    },
+    {
+      "title": "San Francisco to Richmond Sat. & Sun.",
+      "direction": "from-hub",
+      "dates": ["2026-10-03", "2026-10-04"],
+      "columns": [["mtc:san-francisco-ferry-terminal", "depart"], ["7211", "arrive"]],
+      "legs": [
+        [["mtc:san-francisco-ferry-terminal", "depart", "09:35"], ["7211", "arrive", "10:10"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "11:45"], ["7211", "arrive", "12:20"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "13:05"], ["7211", "arrive", "13:40"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "15:30"], ["7211", "arrive", "16:05"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "17:00"], ["7211", "arrive", "17:35"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "19:20"], ["7211", "arrive", "19:55"]],
+        [["mtc:san-francisco-ferry-terminal", "depart", "20:50"], ["7211", "arrive", "21:25"]]
+      ]
+    }
+  ]
+}
