@@ -3,7 +3,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-for tool in actionlint caddy dprint hadolint shellcheck shfmt; do
+for tool in actionlint caddy dprint editorconfig-checker hadolint shellcheck shfmt; do
   if ! command -v "$tool" >/dev/null 2>&1; then
     echo "Error: $tool not found on PATH. Run bin/setup." >&2
     exit 1
@@ -12,6 +12,10 @@ done
 
 echo "==> dprint check"
 dprint check
+
+# Every git-tracked file, including ones no formatter covers
+echo "==> editorconfig-checker"
+editorconfig-checker
 
 echo "==> shellcheck"
 shellcheck bin/*

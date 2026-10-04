@@ -24,6 +24,10 @@ indent_size = 4
 [*.go]
 indent_style = tab
 
+# caddy fmt enforces tabs.
+[Caddyfile]
+indent_style = tab
+
 # PowerShell Practice and Style says four spaces. PSScriptAnalyzer cannot read
 # .editorconfig, so a repo formatting .ps1 must mirror this in its own settings.
 [*.ps1]

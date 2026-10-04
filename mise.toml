@@ -4,6 +4,7 @@
 actionlint = "1.7.12"
 caddy = "2.11.6"
 dprint = "0.56.1"
+editorconfig-checker = "4.0.2"
 hadolint = "2.15.1"
 node = "26.10.0"
 pnpm = "12.8.2"
