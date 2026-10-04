@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+# Everything CI runs, in order. set -e stops at the first failure.
+bin/setup
+bin/lint
+bin/test
+bin/build-image
+bin/test-image
