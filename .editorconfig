@@ -28,6 +28,10 @@ indent_style = tab
 [Caddyfile]
 indent_style = tab
 
+# Package Control rewrites this file with tabs.
+[Package Control.sublime-settings]
+indent_style = tab
+
 # PowerShell Practice and Style says four spaces. PSScriptAnalyzer cannot read
 # .editorconfig, so a repo formatting .ps1 must mirror this in its own settings.
 [*.ps1]
