@@ -9,3 +9,4 @@ bin/lint
 bin/test
 bin/build-image
 bin/test-image
+bin/test-feeds
