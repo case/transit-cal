@@ -82,3 +82,29 @@ def gtfs_zip(tmp_path: Path) -> Callable[..., Path]:
         return path
 
     return write
+
+
+# A committed, invented GTFS feed and its catalog. Real operators' data stays out of the repo.
+SYNTHETIC = Path(__file__).parent / "fixtures" / "synthetic"
+
+
+def pack_gtfs(src: Path, dest: Path) -> Path:
+    """Zip a directory of GTFS text files with fixed metadata, so equal files give equal bytes."""
+    with zipfile.ZipFile(dest, "w") as zf:
+        for path in sorted(src.glob("*.txt")):
+            info = zipfile.ZipInfo(path.name, date_time=(1980, 1, 1, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = 0o644 << 16
+            zf.writestr(info, path.read_bytes())
+    return dest
+
+
+@pytest.fixture
+def pack_synthetic() -> Callable[[Path], Path]:
+    """Pack the synthetic GTFS to the given path."""
+    return lambda dest: pack_gtfs(SYNTHETIC / "gtfs", dest)
+
+
+@pytest.fixture
+def synthetic_gtfs(pack_synthetic: Callable[[Path], Path], tmp_path: Path) -> Path:
+    return pack_synthetic(tmp_path / "synthetic.zip")

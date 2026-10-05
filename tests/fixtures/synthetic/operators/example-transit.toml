@@ -1,0 +1,58 @@
+name = "Example Transit"
+gtfs_agency = "EX"
+onestop_id = "o-9q9-exampletransit"
+website = "https://example.test/"
+
+[hub]
+station = "central"
+to = { slug = "to-central", name = "To Central" }
+from = { slug = "from-central", name = "From Central" }
+
+[[routes]]
+slug = "north"
+name = "North"
+gtfs_route = "EX:N"
+url = "https://example.test/north/"
+terminals = ["north"]
+
+[[routes]]
+slug = "east"
+name = "East"
+gtfs_route = "EX:E"
+url = "https://example.test/east/"
+terminals = ["east1", "east2"]
+
+[[routes]]
+slug = "south-line"
+name = "South Line"
+gtfs_route = "EX:S"
+url = "https://example.test/south-line/"
+terminals = ["east1"]
+
+[routes.hub]
+station = "south"
+to = { slug = "to-south", name = "To South" }
+from = { slug = "from-south", name = "From South" }
+
+[stops.central-a]
+name = "Central Station"
+gate = "Gate A"
+address = "1 Central Plaza"
+place = "Central Station Gate A"
+
+[stops.central-b]
+name = "Central Station"
+gate = "Gate B"
+
+[stops.south-a]
+name = "South Station"
+gate = "Gate A"
+
+[stops.north]
+name = "North Point"
+
+[stops.east1]
+name = "East One"
+
+[stops.east2]
+name = "East Two"

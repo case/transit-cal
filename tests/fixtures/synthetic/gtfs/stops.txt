@@ -1,0 +1,9 @@
+stop_id,stop_name,location_type,parent_station,stop_desc,stop_lat,stop_lon
+central,Central Station,1,,1 Central Plaza,37.79553,-122.39341
+central-a,Central Station Gate A,0,central,,37.79540,-122.39320
+central-b,Central Station Gate B,0,central,,37.79520,-122.39300
+south,South Station,1,,,37.65000,-122.38000
+south-a,South Station Gate A,0,south,,37.65010,-122.38010
+north,North Point,0,,9 Pier Rd,37.95000,-122.50000
+east1,East One,0,,,37.79000,-122.28000
+east2,East Two,0,,,37.80000,-122.27000

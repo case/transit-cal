@@ -1,0 +1,15 @@
+route_id,service_id,trip_id,block_id
+EX:N,WK,n1,BN
+EX:N,WK,n2,BN
+EX:N,WK,n3,
+EX:N,WK,n4,
+EX:N,WK,n5,
+EX:N,WE,n6,
+EX:N,WE,n7,
+EX:E,WK,e1,BE
+EX:E,WK,e2,BE
+EX:E,WK,e3,
+EX:E,WK,e4,BX
+EX:E,WK,e5,BX
+EX:S,WK,s1,
+EX:S,WK,s2,

@@ -1,0 +1,4 @@
+route_id,agency_id,route_short_name,route_long_name,route_type
+EX:N,EX,N,North,4
+EX:E,EX,E,East,4
+EX:S,EX,S,South Line,4
