@@ -3,6 +3,10 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
+# Acceptance tests skip unless TRANSIT_CAL_GTFS points at the pinned GTFS zips
+echo "==> pytest"
+uv run --locked pytest
+
 # Playwright against the 11ty dev server; no Docker needed
 echo "==> playwright"
 pnpm --dir web exec playwright test
