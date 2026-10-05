@@ -14,7 +14,7 @@ transit-cal = "transit_cal.cli:main"
 dev = ["pytest>=9.1", "ty==0.0.84"]
 
 [build-system]
-requires = ["uv_build>=0.11.29,<0.12.0"]
+requires = ["uv_build>=0.12.23,<0.13.0"]
 build-backend = "uv_build"
 
 [tool.pytest.ini_options]

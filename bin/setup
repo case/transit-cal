@@ -15,6 +15,10 @@ echo "==> mise install"
 mise install
 
 # mise exec, since the tools aren't on PATH until mise is activated
+# --locked fails when uv.lock is out of date with pyproject.toml
+echo "==> uv sync"
+mise exec -- uv sync --locked
+
 echo "==> pnpm install"
 mise exec -- pnpm --dir web install
 
