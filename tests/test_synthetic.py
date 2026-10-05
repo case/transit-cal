@@ -1,5 +1,6 @@
 """The synthetic fixture builds the legs and feeds it was designed to produce."""
 
+import zipfile
 from collections.abc import Callable
 from datetime import date, datetime
 from pathlib import Path
@@ -8,9 +9,9 @@ from zoneinfo import ZoneInfo
 import pytest
 from icalendar import Calendar, Event
 
-from transit_cal.build import build_feeds
+from transit_cal.build import BuildError, build_feeds
 from transit_cal.catalog import load_operators
-from transit_cal.gtfs import load
+from transit_cal.gtfs import GtfsError, load
 from transit_cal.legs import FROM_HUB, TO_HUB, Leg, build_legs
 
 SYNTHETIC = Path(__file__).parent / "fixtures" / "synthetic"
@@ -134,7 +135,39 @@ def test_after_midnight_departure_is_dated_the_next_calendar_day(
     assert datetime(2026, 10, 10, 0, 10, tzinfo=LA) in starts
 
 
-def test_packing_is_byte_stable(pack_synthetic: Callable[[Path], Path], tmp_path: Path) -> None:
+def test_packing_is_byte_stable(pack_synthetic: Callable[..., Path], tmp_path: Path) -> None:
     a = pack_synthetic(tmp_path / "a.zip").read_bytes()
     b = pack_synthetic(tmp_path / "b.zip").read_bytes()
     assert a == b
+
+
+def test_a_dropped_file_is_left_out(pack_synthetic: Callable[..., Path], tmp_path: Path) -> None:
+    gtfs = pack_synthetic(tmp_path / "v.zip", {"calendar_dates.txt": None})
+    assert "calendar_dates.txt" not in zipfile.ZipFile(gtfs).namelist()
+
+
+def test_a_replaced_file_reaches_the_loader(
+    pack_synthetic: Callable[..., Path], tmp_path: Path
+) -> None:
+    agency = (
+        "agency_id,agency_name,agency_url,agency_timezone\nEX,Example,https://e.test/,Nowhere\n"
+    )
+    gtfs = pack_synthetic(tmp_path / "v.zip", {"agency.txt": agency})
+    with pytest.raises(GtfsError, match="unknown timezone 'Nowhere'"):
+        load(gtfs, {"EX"})
+
+
+def test_an_edited_trip_reaches_the_build(
+    pack_synthetic: Callable[..., Path], tmp_path: Path
+) -> None:
+    backwards = ("n1,north,2,08:30:00,08:30:00", "n1,north,2,07:30:00,07:30:00")
+    gtfs = pack_synthetic(tmp_path / "v.zip", {"stop_times.txt": backwards})
+    with pytest.raises(BuildError, match="route 'north': .*leg goes back in time at north"):
+        build_feeds(gtfs, [OPERATOR], tmp_path / "out", start=TUESDAY, days=1, stamp=STAMP)
+
+
+def test_an_edit_for_text_that_is_not_there_fails(
+    pack_synthetic: Callable[..., Path], tmp_path: Path
+) -> None:
+    with pytest.raises(AssertionError, match="no such text"):
+        pack_synthetic(tmp_path / "v.zip", {"trips.txt": ("no such text", "x")})

@@ -88,23 +88,36 @@ def gtfs_zip(tmp_path: Path) -> Callable[..., Path]:
 SYNTHETIC = Path(__file__).parent / "fixtures" / "synthetic"
 
 
-def pack_gtfs(src: Path, dest: Path) -> Path:
-    """Zip a directory of GTFS text files with fixed metadata, so equal files give equal bytes."""
+def pack_gtfs(src: Path, dest: Path, edits: dict[str, Edit] | None = None) -> Path:
+    """Zip a directory of GTFS text files with fixed metadata, so equal files give equal bytes.
+
+    Edits work as in gtfs_zip: new text, an (old, new) pair, or None to drop the file.
+    """
+    files: dict[str, str | None] = {
+        p.name: p.read_text(encoding="utf-8", newline="") for p in src.glob("*.txt")
+    }
+    for name, edit in (edits or {}).items():
+        if isinstance(edit, tuple):
+            text = files[name]
+            assert text is not None and edit[0] in text, edit[0]
+            edit = text.replace(*edit)
+        files[name] = edit
     with zipfile.ZipFile(dest, "w") as zf:
-        for path in sorted(src.glob("*.txt")):
-            info = zipfile.ZipInfo(path.name, date_time=(1980, 1, 1, 0, 0, 0))
-            info.compress_type = zipfile.ZIP_DEFLATED
-            info.external_attr = 0o644 << 16
-            zf.writestr(info, path.read_bytes())
+        for name, text in sorted(files.items()):
+            if text is not None:
+                info = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
+                info.compress_type = zipfile.ZIP_DEFLATED
+                info.external_attr = 0o644 << 16
+                zf.writestr(info, text.encode("utf-8"))
     return dest
 
 
 @pytest.fixture
-def pack_synthetic() -> Callable[[Path], Path]:
-    """Pack the synthetic GTFS to the given path."""
-    return lambda dest: pack_gtfs(SYNTHETIC / "gtfs", dest)
+def pack_synthetic() -> Callable[..., Path]:
+    """Pack the synthetic GTFS to the given path, with optional edits."""
+    return lambda dest, edits=None: pack_gtfs(SYNTHETIC / "gtfs", dest, edits)
 
 
 @pytest.fixture
-def synthetic_gtfs(pack_synthetic: Callable[[Path], Path], tmp_path: Path) -> Path:
+def synthetic_gtfs(pack_synthetic: Callable[..., Path], tmp_path: Path) -> Path:
     return pack_synthetic(tmp_path / "synthetic.zip")
