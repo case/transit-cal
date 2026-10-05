@@ -2,6 +2,7 @@
 name = "transit-cal"
 version = "0.1.0"
 description = "Transit schedules as subscribable calendar feeds"
+readme = "README.md"
 authors = [{ name = "Eric Case", email = "eric@vedana.net" }]
 license = "MIT"
 requires-python = ">=3.14"
