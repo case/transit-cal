@@ -1,5 +1,8 @@
 """The synthetic fixture builds the legs and feeds it was designed to produce."""
 
+import os
+import subprocess
+import sys
 import zipfile
 from collections.abc import Callable
 from datetime import date, datetime
@@ -171,3 +174,21 @@ def test_an_edit_for_text_that_is_not_there_fails(
 ) -> None:
     with pytest.raises(AssertionError, match="no such text"):
         pack_synthetic(tmp_path / "v.zip", {"trips.txt": ("no such text", "x")})
+
+
+def build_in_subprocess(gtfs: Path, out: Path, host: dict[str, str]) -> dict[str, bytes]:
+    """Run the CLI in a fresh interpreter whose environment sets the hash seed, locale and TZ."""
+    env = os.environ | host | {"SOURCE_DATE_EPOCH": "1790000000"}
+    argv = ["build", str(gtfs), "--operators", str(SYNTHETIC / "operators"), "--out", str(out)]
+    argv += ["--start", "2026-10-06", "--days", "14"]
+    subprocess.run([sys.executable, "-m", "transit_cal.cli", *argv], env=env, check=True)
+    return {str(p.relative_to(out)): p.read_bytes() for p in sorted(out.rglob("*.ics"))}
+
+
+def test_two_builds_produce_identical_bytes(synthetic_gtfs: Path, tmp_path: Path) -> None:
+    host_a = {"PYTHONHASHSEED": "1", "LC_ALL": "C", "TZ": "UTC"}
+    host_b = {"PYTHONHASHSEED": "2", "LC_ALL": "de_DE.UTF-8", "TZ": "Asia/Tokyo"}
+    first = build_in_subprocess(synthetic_gtfs, tmp_path / "a", host_a)
+    second = build_in_subprocess(synthetic_gtfs, tmp_path / "b", host_b)
+    assert len(first) == 6
+    assert first == second

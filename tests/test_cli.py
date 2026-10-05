@@ -10,6 +10,7 @@ from transit_cal.build import BuildError, FeedResult
 from transit_cal.catalog import load_operators
 
 NOW = datetime(2026, 10, 6, 6, 30, tzinfo=UTC)
+SYNTHETIC = Path(__file__).parent / "fixtures" / "synthetic"
 # Agency A from conftest's GTFS, with one trip added from the hub so both directions run.
 OPERATOR = """\
 name = "Agency A Ferry"
@@ -72,7 +73,7 @@ def agency_a(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     directory = tmp_path / "operators"
     directory.mkdir()
     (directory / "agency-a.toml").write_text(OPERATOR, encoding="utf-8")
-    monkeypatch.setattr(cli, "load_operators", lambda: load_operators(directory))
+    monkeypatch.setattr(cli, "load_operators", lambda _=None: load_operators(directory))
 
 
 def test_defaults_build_60_days_from_the_agency_clock_into_out(calls) -> None:
@@ -211,3 +212,63 @@ def test_build_error_message_is_printed_as_is(monkeypatch, capsys) -> None:
     monkeypatch.setattr(cli, "build_feeds", fail)
     assert cli.main(["build", "feed.zip"]) == 1
     assert capsys.readouterr().err == "transit-cal: error: feed path 'x' built twice\n"
+
+
+def test_operators_option_builds_the_synthetic_fixture_end_to_end(
+    synthetic_gtfs, tmp_path, capsys
+) -> None:
+    out = tmp_path / "out"
+    argv = ["build", str(synthetic_gtfs), "--operators", str(SYNTHETIC / "operators")]
+    argv += ["--out", str(out), "--start", "2026-10-06", "--days", "7"]
+    assert cli.main(argv) == 0
+    paths = sorted(str(p.relative_to(out)) for p in out.rglob("*.ics"))
+    assert paths == [
+        f"o-9q9-exampletransit/{name}.ics"
+        for name in [
+            "east-from-central",
+            "east-to-central",
+            "north-from-central",
+            "north-to-central",
+            "south-line-from-south",
+            "south-line-to-south",
+        ]
+    ]
+    lines = capsys.readouterr().out.splitlines()
+    assert lines[0] == "Example Transit: service days 2026-10-06 to 2026-10-12"
+    assert lines[-1] == f"wrote 6 feeds under {out}"
+
+
+def operators_input(kind: str, tmp_path: Path) -> Path:
+    path = tmp_path / "operators"
+    if kind == "a file":
+        path.write_text("not a directory", encoding="utf-8")
+    elif kind != "missing":
+        path.mkdir()
+    if kind == "malformed":
+        (path / "broken.toml").write_text("name = ", encoding="utf-8")
+    if kind == "not UTF-8":
+        (path / "latin.toml").write_bytes(b'name = "Caf\xe9"\n')
+    return path
+
+
+@pytest.mark.parametrize(
+    ("kind", "message"),
+    [
+        ("missing", "No such file"),
+        ("a file", "Not a directory"),
+        ("empty", "no operators to build"),
+        ("malformed", "broken.toml: "),
+        ("not UTF-8", "latin.toml: not UTF-8"),
+    ],
+)
+def test_bad_operators_directory_exits_1_with_one_line_and_writes_nothing(
+    synthetic_gtfs, tmp_path, capsys, kind, message
+) -> None:
+    out = tmp_path / "out"
+    argv = ["build", str(synthetic_gtfs), "--operators", str(operators_input(kind, tmp_path))]
+    assert cli.main([*argv, "--out", str(out)]) == 1
+    err = capsys.readouterr().err
+    assert err.startswith("transit-cal: error: ")
+    assert message in err
+    assert err.count("\n") == 1
+    assert not out.exists()

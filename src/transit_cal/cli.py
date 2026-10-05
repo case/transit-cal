@@ -33,13 +33,18 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="first GTFS service day, YYYY-MM-DD (yesterday in each agency's timezone)",
     )
     build.add_argument("--days", type=_positive, default=60, help="service days to cover (60)")
+    build.add_argument(
+        "--operators",
+        type=Path,
+        help="operator catalog directory, for tests and development (the packaged catalog)",
+    )
     args = parser.parse_args(argv)
 
     now = _now()
     try:
         results = build_feeds(
             args.gtfs,
-            load_operators(),
+            load_operators(args.operators),
             args.out,
             start=args.start,
             days=args.days,

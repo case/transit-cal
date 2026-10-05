@@ -78,6 +78,8 @@ def load_operators(directory: Traversable | Path | None = None) -> list[Operator
         slug = path.name.removesuffix(".toml")
         try:
             data = tomllib.loads(path.read_text(encoding="utf-8"))
+        except UnicodeDecodeError:
+            raise CatalogError(f"{path.name}: not UTF-8") from None
         except tomllib.TOMLDecodeError as e:
             raise CatalogError(f"{path.name}: {e}") from None
         if "slug" in data:
