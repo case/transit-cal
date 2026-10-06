@@ -1,0 +1,5 @@
+#!/bin/sh
+# The image's ical4j validator: a small serial-GC heap for one short batch run.
+exec java -Xms16m -Xmx128m -XX:+UseSerialGC -XX:ActiveProcessorCount=1 \
+  -XX:+ExitOnOutOfMemoryError -XX:-UsePerfData \
+  -cp '/opt/ics-validate/lib/*' IcsValidate "$@"

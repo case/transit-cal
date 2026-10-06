@@ -5,3 +5,13 @@
 !web/pnpm-lock.yaml
 !web/pnpm-workspace.yaml
 !web/source/
+!tools/IcsValidate.java
+!tools/ics-validate
+!tools/ics-validate.lock
+!pyproject.toml
+!uv.lock
+!README.md
+!src/
+!tools/build-feeds
+!tools/entrypoint
+!tools/s6/

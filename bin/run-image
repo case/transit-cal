@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+# Runs the production image locally: Caddy serves out/feeds, and the scheduler rebuilds them on its
+# slots when TRANSITLAND_API_KEY is set (passed by name, so the value stays out of the process list)
+IMAGE="${IMAGE:-transit-cal:local}"
+FEEDS="${FEEDS:-$PWD/out/feeds}"
+
+mkdir -p "$FEEDS"
+echo "==> http://127.0.0.1:${PORT:-8080}"
+exec docker run --rm --read-only --tmpfs /tmp \
+  -v "$FEEDS":/feeds \
+  -e TRANSITLAND_API_KEY \
+  --publish "127.0.0.1:${PORT:-8080}:8080" \
+  "$IMAGE"

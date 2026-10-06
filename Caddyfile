@@ -1,3 +1,13 @@
+{
+	# No admin API or saved config; its only writable state is under /tmp
+	admin off
+	persist_config off
+	# Railway's edge terminates HTTPS, so behind it plain HTTP/1.1 is all there is
+	servers {
+		protocols h1
+	}
+}
+
 :{$PORT:8080} {
 	# Structured access logs on stderr
 	log {
@@ -9,13 +19,26 @@
 	header @healthz Content-Type text/plain
 	log_skip @healthz
 
-	root * /srv
 	encode zstd gzip
-	file_server
+
+	# Only published feed paths reach the volume: /<onestop_id>/<route>-<direction>.ics
+	@feeds path_regexp ^/o(-[0-9a-z~]+){1,2}/[a-z0-9]+(-[a-z0-9]+)*\.ics$
+	handle @feeds {
+		root * /feeds/current
+		file_server
+	}
+	handle {
+		root * /srv
+		file_server
+	}
 
 	header {
 		X-Content-Type-Options nosniff
 		X-Frame-Options DENY
 		Referrer-Policy strict-origin-when-cross-origin
+		# One year, on Railway's domain only; add includeSubDomains once on our own domain
+		Strict-Transport-Security "max-age=31536000"
+		# The site has same-origin CSS and no scripts, forms or frames
+		Content-Security-Policy "default-src 'none'; style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
 	}
 }

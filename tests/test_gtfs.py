@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 
+from transit_cal import gtfs
 from transit_cal.gtfs import GtfsError, Stop, load, parse_time
 
 GtfsZip = Callable[..., Path]
@@ -138,4 +139,63 @@ def test_load_rejects_text_that_is_not_utf8(gtfs_zip: GtfsZip) -> None:
     with zipfile.ZipFile(path, "a") as zf:
         zf.writestr("stops.txt", "stop_id,stop_name\nhub,Caf\u00e9\n".encode("latin-1"))
     with pytest.raises(GtfsError, match="stops.txt is not UTF-8"):
+        load(path, {"A"})
+
+
+def parsed_bytes(path: Path) -> int:
+    with zipfile.ZipFile(path) as zf:
+        return sum(i.file_size for i in zf.infolist() if i.filename in gtfs.PARSED)
+
+
+def test_load_rejects_a_feed_whose_parsed_files_unpack_past_the_limit(
+    gtfs_zip: GtfsZip, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    path = gtfs_zip()
+    size = parsed_bytes(path)
+    monkeypatch.setattr(gtfs, "MAX_UNPACKED_BYTES", size - 1)
+    with pytest.raises(GtfsError, match=f"feed unpacks to {size} bytes, over {size - 1}"):
+        load(path, {"A"})
+
+
+def test_load_accepts_a_feed_exactly_at_the_unpacked_limit(
+    gtfs_zip: GtfsZip, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    path = gtfs_zip()
+    monkeypatch.setattr(gtfs, "MAX_UNPACKED_BYTES", parsed_bytes(path))
+    assert load(path, {"A"})["A"].routes
+
+
+def test_unparsed_files_do_not_count_toward_the_unpacked_limit(
+    gtfs_zip: GtfsZip, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    path = gtfs_zip()
+    monkeypatch.setattr(gtfs, "MAX_UNPACKED_BYTES", parsed_bytes(path))
+    with zipfile.ZipFile(path, "a") as zf:
+        zf.writestr("shapes.txt", "x" * 100_000)
+    assert load(path, {"A"})["A"].routes
+
+
+def test_duplicate_parsed_members_all_count_toward_the_unpacked_limit(
+    gtfs_zip: GtfsZip, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    path = gtfs_zip()
+    monkeypatch.setattr(gtfs, "MAX_UNPACKED_BYTES", parsed_bytes(path))
+    with zipfile.ZipFile(path, "a") as zf, pytest.warns(UserWarning, match="Duplicate name"):
+        zf.writestr("stop_times.txt", "trip_id\n")
+    with pytest.raises(GtfsError, match="feed unpacks to"):
+        load(path, {"A"})
+
+
+def test_a_member_longer_than_its_declared_size_fails_instead_of_reading_on(
+    tmp_path: Path, gtfs_zip: GtfsZip
+) -> None:
+    path = gtfs_zip()
+    data = bytearray(path.read_bytes())
+    # Shrink stop_times.txt's declared size in the central directory; zipfile stops there
+    with zipfile.ZipFile(path) as zf:
+        info = zf.getinfo("stop_times.txt")
+    central = data.rfind(b"PK\x01\x02", 0, data.rfind(b"stop_times.txt"))
+    data[central + 24 : central + 28] = (info.file_size // 2).to_bytes(4, "little")
+    path.write_bytes(bytes(data))
+    with pytest.raises(GtfsError, match="not a readable zip"):
         load(path, {"A"})

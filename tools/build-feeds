@@ -1,0 +1,41 @@
+#!/bin/sh
+# In the image, as the builder: fetch, build, validate, then publish under one lock.
+set -eu
+# Caddy, another user, serves what this writes, whatever umask the caller left
+umask 022
+
+FEEDS="${FEEDS_DIR:-/feeds}"
+# On the volume, so builds in separate containers sharing it still exclude each other
+LOCK="$FEEDS/.build.lock"
+
+exec 9>"$LOCK"
+if ! flock -n 9; then
+  echo "build-feeds: another build holds $LOCK" >&2
+  exit 1
+fi
+
+# Leftovers from an interrupted run; nothing else writes here while the lock is held
+rm -rf "$FEEDS/staging"
+mkdir -p "$FEEDS/staging" "$FEEDS/gtfs"
+rm -f "$FEEDS"/gtfs/.fetch-*
+stage="$FEEDS/staging/build"
+
+echo "==> fetch"
+zip="$(transit-cal fetch --out "$FEEDS/gtfs")"
+echo "    $zip"
+# Only the fetch needs the key; the build, the JVM and cleanup never see it
+unset TRANSITLAND_API_KEY
+
+echo "==> build"
+transit-cal build "$zip" --out "$stage"
+
+echo "==> validate"
+(cd "$stage" && find . -name '*.ics' -exec ics-validate {} +)
+
+echo "==> publish"
+transit-cal publish "$stage" --feeds "$FEEDS" --keep 2
+
+# Keep only this run's GTFS zip; rm fails loudly where busybox find -delete would not
+for old in "$FEEDS"/gtfs/*.zip; do
+  [ "$old" = "$zip" ] || rm -f "$old"
+done

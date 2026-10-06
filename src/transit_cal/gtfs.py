@@ -12,6 +12,9 @@ from pathlib import Path
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 REQUIRED = ("agency.txt", "routes.txt", "trips.txt", "stop_times.txt", "stops.txt")
+PARSED = (*REQUIRED, "calendar.txt", "calendar_dates.txt")
+# The 511 feed's parsed files unpack to ~220 MiB; zipfile never reads past a declared size
+MAX_UNPACKED_BYTES = 2 * 1024 * 1024 * 1024
 WEEKDAYS = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
 STOP_TIME_COLUMNS = ("trip_id", "stop_id", "stop_sequence", "arrival_time", "departure_time")
 _TIME = re.compile(r"(\d{1,3}):([0-5]\d):([0-5]\d)")
@@ -94,8 +97,9 @@ def load(path: Path, agency_ids: AbstractSet[str]) -> dict[str, Feed]:
     """Load each agency's routes, trips, stop times, stops and calendars in one pass.
 
     Only rows the requested agencies use are parsed. Raises GtfsError for a file that is not a
-    zip, text that is not UTF-8, a missing required file, an agency missing from the feed or
-    without routes, an unknown timezone, or a value that cannot be read.
+    zip, parsed files unpacking past MAX_UNPACKED_BYTES, text that is not UTF-8, a missing
+    required file, an agency missing from the feed or without routes, an unknown timezone, or a
+    value that cannot be read.
     """
     try:
         return _load(path, agency_ids)
@@ -108,6 +112,9 @@ def _load(path: Path, agency_ids: AbstractSet[str]) -> dict[str, Feed]:
         missing = [name for name in REQUIRED if name not in zf.namelist()]
         if missing:
             raise GtfsError(f"feed has no {', '.join(missing)}")
+        unpacked = sum(i.file_size for i in zf.infolist() if i.filename in PARSED)
+        if unpacked > MAX_UNPACKED_BYTES:
+            raise GtfsError(f"feed unpacks to {unpacked} bytes, over {MAX_UNPACKED_BYTES}")
 
         timezones = {
             r["agency_id"]: r["agency_timezone"]

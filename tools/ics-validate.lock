@@ -1,0 +1,7 @@
+# Every jar the validator runs with: SHA-256, then Maven Central path. The image build fetches nothing else.
+f4cac5c4a16d8c0f2228ad0e3221b90d069ae0efea73402b51888468e86405f9 org/mnode/ical4j/ical4j/4.4.0/ical4j-4.4.0.jar
+f700de80ac270d0344fdea7468201d8b9c805e5c648331c3619f2ee067ccfc59 commons-codec/commons-codec/1.17.0/commons-codec-1.17.0.jar
+4eeeae8d20c078abb64b015ec158add383ac581571cddc45c68f0c9ae0230720 org/apache/commons/commons-lang3/3.18.0/commons-lang3-3.18.0.jar
+51e4d21edc4e9447f7760c050e0baee75d7d973f387ba605a17abdc4d24fd6d8 org/threeten/threeten-extra/1.8.0/threeten-extra-1.8.0.jar
+7e1446499b359675d8aabe6af2de86b85e72ae8a2a932c0b40d0e5ba57097439 org/slf4j/slf4j-api/2.0.20/slf4j-api-2.0.20.jar
+6522080396fb339e99bae40d329a06d18d3190dc864020ac4ca943519d0fd85b org/slf4j/slf4j-nop/2.0.20/slf4j-nop-2.0.20.jar

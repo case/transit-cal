@@ -1,5 +1,4 @@
-//DEPS org.mnode.ical4j:ical4j:4.4.0
-//DEPS org.slf4j:slf4j-nop:2.0.20
+// Compiled in the image build against the jars in ics-validate.lock.
 
 import java.io.IOException;
 import java.io.Reader;

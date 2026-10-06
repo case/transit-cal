@@ -1,0 +1,24 @@
+#!/bin/sh
+# PID 1 as root: prepare /feeds and a supervision tree, then become s6-svscan, which runs Caddy and the scheduler.
+set -eu
+
+# A fresh volume mounts root-owned, so give it to the builder; a read-only mount only serves
+mode="$(awk '$2 == "/feeds" { split($4, o, ","); print o[1] }' /proc/mounts)"
+if [ "$(stat -c %u /feeds)" != 10002 ] && [ "$mode" != ro ]; then
+  chown 10002:10002 /feeds
+fi
+
+# s6 writes into its service directories, so it runs root-only ones on /tmp whose scripts link back
+# to /etc/s6: /tmp may be noexec, and the services' users cannot alter what root runs
+umask 077
+rm -rf /tmp/s6 /tmp/s6-env
+cp -Rs /etc/s6 /tmp/s6
+mkdir /tmp/s6-env
+# Only the scheduler's run script loads this; s6 and Caddy never hold the key in their environment
+if [ -n "${TRANSITLAND_API_KEY:-}" ]; then
+  printf '%s\n' "$TRANSITLAND_API_KEY" >/tmp/s6-env/TRANSITLAND_API_KEY
+fi
+unset TRANSITLAND_API_KEY
+# Back to the usual umask, or the builder would write releases Caddy cannot read
+umask 022
+exec s6-svscan /tmp/s6

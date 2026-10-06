@@ -10,6 +10,7 @@ dependencies = ["icalendar>=7.3"]
 
 [project.scripts]
 transit-cal = "transit_cal.cli:main"
+transit-cal-schedule = "transit_cal.schedule:main"
 
 [dependency-groups]
 dev = ["pytest>=9.1", "ty==0.0.84"]

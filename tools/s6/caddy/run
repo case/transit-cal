@@ -1,0 +1,4 @@
+#!/bin/sh
+# Caddy as its own user, with the key removed again in case it ever reaches s6
+exec s6-setuidgid caddy env -u TRANSITLAND_API_KEY \
+  caddy run --config /etc/caddy/Caddyfile --adapter caddyfile

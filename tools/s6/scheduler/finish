@@ -1,0 +1,5 @@
+#!/bin/sh
+# s6 passes the exit code (256 if signalled) and the signal. A stop by SIGTERM goes straight on;
+# a crash waits a minute before the restart, so a broken scheduler cannot spin.
+[ "$1" = 256 ] && [ "$2" = 15 ] && exit 0
+sleep 60

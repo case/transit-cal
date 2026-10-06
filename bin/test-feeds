@@ -3,10 +3,8 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-# ical4j run by JBang. The image is linux/amd64 only, so Apple Silicon emulates it.
-IMAGE="jbangdev/jbang-action:0.142.0@sha256:2d3bbe49718f692c683728fde789fa247f211dce2e494eaf27038656c4f6a192"
-# Maven downloads land here; CI caches this directory between runs
-CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/transit-cal/jbang"
+# ical4j as baked into the production image by bin/build-image
+IMAGE="${IMAGE:-transit-cal:local}"
 
 if ! command -v uv >/dev/null 2>&1; then
   echo "Error: uv not found on PATH. Run bin/setup." >&2
@@ -16,24 +14,23 @@ if ! docker info >/dev/null 2>&1; then
   echo "Error: Docker daemon not reachable." >&2
   exit 1
 fi
+if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
+  echo "Error: image $IMAGE not found. Run bin/build-image." >&2
+  exit 1
+fi
 
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
-mkdir -p "$CACHE"
 
-# Validates the named files, relative to the directory in $1
+# Validates the named files, relative to the directory in $1, offline as production runs it
 validate() {
   local dir="$1"
   shift
-  docker run --rm --platform linux/amd64 \
-    -v "$PWD/tools":/tools:ro \
+  docker run --rm --network none --read-only --user 10002:10002 \
     -v "$dir":/work:ro \
-    -v "$CACHE":/cache \
-    -e JBANG_DIR=/cache/jbang \
-    -e JBANG_REPO=/cache/m2 \
-    -e JBANG_NO_VERSION_CHECK=true \
     --workdir /work \
-    "$IMAGE" /tools/IcsValidate.java "$@"
+    --entrypoint ics-validate \
+    "$IMAGE" "$@"
 }
 
 echo "==> build synthetic feeds"

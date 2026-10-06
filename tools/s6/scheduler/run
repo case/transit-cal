@@ -1,0 +1,3 @@
+#!/bin/sh
+# The key comes from the root-only envdir, and privileges drop before the scheduler starts
+exec s6-envdir /tmp/s6-env s6-setuidgid feeds transit-cal-schedule

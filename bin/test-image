@@ -3,58 +3,6 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-IMAGE="${IMAGE:-transit-cal:local}"
-NAME="transit-cal-test-$$"
-
-if ! docker info >/dev/null 2>&1; then
-  echo "Error: Docker daemon not reachable." >&2
-  exit 1
-fi
-
-cleanup() { docker rm --force "$NAME" >/dev/null 2>&1 || true; }
-trap cleanup EXIT
-
-fail() {
-  echo "Error: $1" >&2
-  docker logs "$NAME" >&2 || true
-  exit 1
-}
-
-# Loopback only, on a port Docker picks
-echo "==> docker run $IMAGE"
-docker run --detach --name "$NAME" --publish 127.0.0.1::8080 "$IMAGE" >/dev/null
-addr="$(docker port "$NAME" 8080/tcp | head -n 1)"
-base="http://127.0.0.1:${addr##*:}"
-
-echo "==> wait for $base/healthz"
-deadline=$((SECONDS + 10))
-until curl --fail --silent --max-time 1 --output /dev/null "$base/healthz"; do
-  [ "$SECONDS" -lt "$deadline" ] || fail "not ready after 10s"
-  sleep 0.5
-done
-
-check() {
-  local path="$1" want_type="$2" out code type
-  out="$(curl --silent --show-error --max-time 5 --output /dev/null \
-    --write-out '%{http_code} %{content_type}' "$base$path")" || fail "$path: request failed"
-  code="${out%% *}"
-  type="${out#* }"
-  [ "$code" = "200" ] || fail "$path: status $code"
-  case "$type" in
-    "$want_type"*) ;;
-    *) fail "$path: content type '$type', want $want_type" ;;
-  esac
-  echo "    $path: $code $type"
-}
-
-echo "==> probe routes"
-check /healthz text/plain
-check / text/html
-check /css/pico.min.css text/css
-
-# Same specs as bin/test, against the production image
-echo "==> playwright against $base"
-BASE_URL="$base" pnpm --dir web exec playwright test
-
-echo
-echo "✅ Image test passed."
+# Behaviour tests of the image bin/build-image tagged (IMAGE, default transit-cal:local)
+echo "==> pytest tests-image"
+exec uv run --locked pytest tests-image "$@"

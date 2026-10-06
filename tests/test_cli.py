@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -8,6 +8,7 @@ import pytest
 from transit_cal import cli
 from transit_cal.build import BuildError, FeedResult
 from transit_cal.catalog import load_operators
+from transit_cal.fetch import Fetched
 
 NOW = datetime(2026, 10, 6, 6, 30, tzinfo=UTC)
 SYNTHETIC = Path(__file__).parent / "fixtures" / "synthetic"
@@ -214,6 +215,16 @@ def test_build_error_message_is_printed_as_is(monkeypatch, capsys) -> None:
     assert capsys.readouterr().err == "transit-cal: error: feed path 'x' built twice\n"
 
 
+def test_control_characters_in_an_error_print_escaped_on_one_line(monkeypatch, capsys) -> None:
+    def fail(*args: object, **kwargs: object) -> list[FeedResult]:
+        raise BuildError("stop 'a\nforged: ok\x1b[2J\u2028' not in stops.txt")
+
+    monkeypatch.setattr(cli, "build_feeds", fail)
+    assert cli.main(["build", "feed.zip"]) == 1
+    err = capsys.readouterr().err
+    assert err == "transit-cal: error: stop 'a\\nforged: ok\\x1b[2J\\u2028' not in stops.txt\n"
+
+
 def test_operators_option_builds_the_synthetic_fixture_end_to_end(
     synthetic_gtfs, tmp_path, capsys
 ) -> None:
@@ -272,3 +283,139 @@ def test_bad_operators_directory_exits_1_with_one_line_and_writes_nothing(
     assert message in err
     assert err.count("\n") == 1
     assert not out.exists()
+
+
+@pytest.fixture
+def fetches(monkeypatch: pytest.MonkeyPatch) -> list[dict[str, Any]]:
+    """Replace fetch_latest with a recorder that downloads nothing."""
+    recorded: list[dict[str, Any]] = []
+
+    def record(feed: str, out: Path, api_key: str) -> Fetched:
+        recorded.append({"feed": feed, "out": out, "api_key": api_key})
+        return Fetched(out / "abc123.zip", reused=False, warning=None)
+
+    monkeypatch.setattr(cli, "fetch_latest", record)
+    return recorded
+
+
+def test_fetch_defaults_download_the_regional_feed_into_out_gtfs_and_print_the_path(
+    fetches, monkeypatch, capsys
+) -> None:
+    monkeypatch.setenv("TRANSITLAND_API_KEY", "k")
+
+    assert cli.main(["fetch"]) == 0
+    assert fetches == [{"feed": "f-sf~bay~area~rg", "out": Path("out/gtfs"), "api_key": "k"}]
+    assert capsys.readouterr().out == "out/gtfs/abc123.zip\n"
+
+
+def test_fetch_options_reach_the_download(fetches, monkeypatch, tmp_path) -> None:
+    monkeypatch.setenv("TRANSITLAND_API_KEY", "k")
+
+    assert cli.main(["fetch", "--feed", "f-other", "--out", str(tmp_path)]) == 0
+    assert fetches == [{"feed": "f-other", "out": tmp_path, "api_key": "k"}]
+
+
+def test_fetch_without_the_key_exits_1_with_one_line_and_writes_nothing(
+    monkeypatch, tmp_path, capsys
+) -> None:
+    monkeypatch.delenv("TRANSITLAND_API_KEY", raising=False)
+
+    assert cli.main(["fetch", "--out", str(tmp_path / "gtfs")]) == 1
+    assert capsys.readouterr().err == "transit-cal: error: TRANSITLAND_API_KEY is empty\n"
+    assert not (tmp_path / "gtfs").exists()
+
+
+def test_publish_moves_the_stage_into_a_release_and_prints_its_path(tmp_path, capsys) -> None:
+    staged = tmp_path / "feeds" / "staging" / "x"
+    staged.mkdir(parents=True)
+    (staged / "route.ics").write_text("BEGIN:VCALENDAR\n", encoding="utf-8")
+    feeds = tmp_path / "feeds"
+
+    assert cli.main(["publish", str(staged), "--feeds", str(feeds)]) == 0
+    release = feeds / "releases" / "20261006T063000.000000Z"
+    assert capsys.readouterr().out == f"{release}\n"
+    assert (feeds / "current" / "route.ics").is_file()
+
+
+def test_publish_requires_the_feeds_directory(capsys) -> None:
+    with pytest.raises(SystemExit) as e:
+        cli.main(["publish", "stage"])
+    assert e.value.code == 2
+    assert "--feeds" in capsys.readouterr().err
+
+
+def test_publish_failure_exits_1_with_one_line(tmp_path, capsys) -> None:
+    assert cli.main(["publish", str(tmp_path / "nope"), "--feeds", str(tmp_path)]) == 1
+    err = capsys.readouterr().err
+    assert err.startswith("transit-cal: error: ") and "a stage must be a directory in" in err
+    assert err.count("\n") == 1
+
+
+def staged_feed(feeds: Path, name: str) -> Path:
+    staged = feeds / "staging" / name
+    staged.mkdir(parents=True)
+    (staged / "route.ics").write_text("BEGIN:VCALENDAR\n", encoding="utf-8")
+    return staged
+
+
+def test_publish_prunes_to_keep_but_spares_the_previous_release(
+    tmp_path, monkeypatch, capsys
+) -> None:
+    feeds = tmp_path / "feeds"
+    for day in range(3):
+        monkeypatch.setattr(cli, "_now", lambda day=day: NOW + timedelta(days=day))
+        assert cli.main(["publish", str(staged_feed(feeds, str(day))), "--feeds", str(feeds)]) == 0
+    monkeypatch.setattr(cli, "_now", lambda: NOW + timedelta(days=3))
+
+    argv = ["publish", str(staged_feed(feeds, "3")), "--feeds", str(feeds), "--keep", "1"]
+    assert cli.main(argv) == 0
+    assert sorted(p.name for p in (feeds / "releases").iterdir()) == [
+        "20261008T063000.000000Z",
+        "20261009T063000.000000Z",
+    ]
+
+
+def test_publish_with_a_failed_prune_still_exits_0_with_a_warning(
+    tmp_path, monkeypatch, capsys
+) -> None:
+    feeds = tmp_path / "feeds"
+    for day in range(3):
+        monkeypatch.setattr(cli, "_now", lambda day=day: NOW + timedelta(days=day))
+        cli.main(["publish", str(staged_feed(feeds, str(day))), "--feeds", str(feeds)])
+    capsys.readouterr()
+    monkeypatch.setattr(cli, "_now", lambda: NOW + timedelta(days=3))
+
+    def fail(*args: object, **kwargs: object) -> list[Path]:
+        raise OSError("busy")
+
+    monkeypatch.setattr(cli, "prune", fail)
+
+    assert cli.main(["publish", str(staged_feed(feeds, "late")), "--feeds", str(feeds)]) == 0
+    out = capsys.readouterr()
+    assert out.err == "transit-cal: warning: published, but pruning failed: busy\n"
+    assert (feeds / "current" / "route.ics").is_file()
+
+
+@pytest.mark.parametrize(
+    ("fetched", "err"),
+    [
+        (
+            Fetched(Path("out/gtfs/abc.zip"), reused=True, warning=None),
+            "transit-cal: unchanged, reusing abc.zip\n",
+        ),
+        (
+            Fetched(Path("out/gtfs/abc.zip"), reused=False, warning="record: HTTP 500; refetching"),
+            "transit-cal: warning: record: HTTP 500; refetching\n",
+        ),
+    ],
+)
+def test_fetch_notes_go_to_stderr_and_stdout_stays_the_path(
+    monkeypatch, capsys, fetched: Fetched, err: str
+) -> None:
+    monkeypatch.setenv("TRANSITLAND_API_KEY", "k")
+    monkeypatch.setattr(cli, "fetch_latest", lambda **_: fetched)
+
+    assert cli.main(["fetch"]) == 0
+    out = capsys.readouterr()
+    assert out.out == "out/gtfs/abc.zip\n"
+    assert out.err == err
