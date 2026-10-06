@@ -62,9 +62,11 @@ COPY --from=python /opt/transit-cal /opt/transit-cal
 COPY tools/ics-validate tools/build-feeds tools/entrypoint /usr/local/bin/
 COPY tools/s6/ /etc/s6/
 
-# Caddy's caddy user has no home; its data and config dirs live on /tmp
+# Caddy's caddy user has no home; its data and config dirs live on /tmp.
+# Unbuffered Python, so its log lines reach Railway as soon as they are printed
 ENV PATH=/opt/transit-cal/bin:$PATH \
     XDG_DATA_HOME=/tmp/caddy/data \
-    XDG_CONFIG_HOME=/tmp/caddy/config
+    XDG_CONFIG_HOME=/tmp/caddy/config \
+    PYTHONUNBUFFERED=1
 EXPOSE 8080
 ENTRYPOINT ["entrypoint"]

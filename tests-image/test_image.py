@@ -47,6 +47,14 @@ def test_only_the_scheduler_holds_the_transitland_key(server: Container):
     assert has_key(server, scheduler), "the scheduler did not receive the Transitland key"
 
 
+def test_scheduler_and_its_builds_write_python_output_unbuffered(server: Container):
+    scheduler = server.pid_of("transit-cal-schedule")
+
+    environ = server.exec("cat", f"/proc/{scheduler}/environ", privileged=True).stdout
+
+    assert "PYTHONUNBUFFERED=1" in environ.split("\0")
+
+
 def test_scheduler_umask_lets_caddy_read_releases(server: Container):
     scheduler = server.pid_of("transit-cal-schedule")
 
