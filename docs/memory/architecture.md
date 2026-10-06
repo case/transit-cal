@@ -53,9 +53,17 @@ Dockerfile  production image: site, Caddy, Python package, JRE and validator
 - Containment: only `s6-svscan` and its supervisors run as root, and the image has no setuid or setgid files (`tests-image` checks). Caddy (UID 10001) can read `/srv` and `/feeds`, write `/tmp` and reach the network; the builder (UID 10002) can also write the volume. Removing tools such as `wget` or `nc` would gain little, since `python3` and the JRE must stay and can do the same. Accepted risk: the scheduler holds the Transitland key under the same UID that parses GTFS and runs ical4j, so code execution through a parser bug could read it; it is a free-tier key with no billing attached.
 - Python is Alpine's `python3` 3.14, pinned by major version in the digest-pinned base: Alpine removes superseded package revisions, so exact pins break rebuilds. uv builds the virtualenv in a separate stage and is not in the final image.
 
+## Retired paths
+
+A feed's path, `/<onestop_id>/<route>-<direction>.ics`, is its subscription URL, so it is permanent. `tests/published-feeds.json` lists every published path, and its test fails when the catalog drops, renames or repoints one it still lists; editing the manifest itself is a reviewed decision. `publish` refuses a release missing a path the served release has.
+
+- A path that must change is retired, never dropped: Caddy answers the old path with a permanent redirect to the new one, which calendar apps follow; `publish` counts the redirected path as kept; and `published-feeds.json` records the move.
+- The catalog rejects a direction slug that repeats its route's slug, such as `south-san-francisco` with `to-south-san-francisco`.
+
 ## Conventions
 
 - Transit terms follow GTFS. A **leg** is one ride on one vehicle, boarding to alighting; it can span an in-seat transfer. A **block** is one vehicle's sequence of trips. A **service day** is GTFS's. Rider-facing text says "departures". Code and comments use no mode-specific words such as "sailing" or "vessel". Sources: [GTFS reference](https://gtfs.org/documentation/schedule/reference/), transitland-lib's `Itinerary` and `Leg`.
+- Direction labels complete the route label into a natural trip description. Prefer `to-<destination>` ("To <destination>"); when the destination stop or place is the route's own name, use `from-<origin>` ("From <origin>") instead. A route name that only mentions a city does not count: the water shuttle stays `to-jack-london-square` and `to-alameda-landing`. Examples: `larkspur-to-san-francisco` and `larkspur-from-san-francisco`; `oakland-alameda-water-shuttle-to-jack-london-square`; `south-san-francisco-from-oakland-alameda`. The catalog checks that every direction slug starts with `to-` or `from-` and never repeats its route's slug; choosing the right endpoint is a review judgement.
 - Feeds ask clients to poll at most daily (`REFRESH-INTERVAL` and `X-PUBLISHED-TTL` of `P1D`). Upstream operator schedules change rarely, and RFC 7986 makes the value a minimum, not a schedule.
 
 <How we do things: version pinning, linting, testing, git hooks, CI runner, deploy flow.>

@@ -112,9 +112,16 @@ def _check(op: Operator, where: str) -> None:
     for h in hubs:
         if h.to.slug == h.from_.slug:
             raise CatalogError(f"{where}: to and from slugs are both {h.to.slug!r}")
+        for d in (h.to, h.from_):
+            if not d.slug.startswith(("to-", "from-")):
+                raise CatalogError(f"{where}: direction {d.slug!r} must start with to- or from-")
     routes = [r.slug for r in op.routes]
     if twice := sorted({s for s in routes if routes.count(s) > 1}):
         raise CatalogError(f"{where}: route slug {twice[0]!r} used twice")
+    for r in op.routes:
+        for d in (r.hub.to, r.hub.from_):
+            if f"-{r.slug}-" in f"-{d.slug}-":
+                raise CatalogError(f"{where}: direction {d.slug!r} repeats route {r.slug!r}")
     names = [f"{r.slug}-{d.slug}" for r in op.routes for d in (r.hub.to, r.hub.from_)]
     if twice := sorted({n for n in names if names.count(n) > 1}):
         raise CatalogError(f"{where}: feed name {twice[0]!r} used twice")

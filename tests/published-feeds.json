@@ -127,17 +127,17 @@
       "7211"
     ]
   },
-  "o-9q9p-sanfranciscobayferry/south-san-francisco-to-east-bay.ics": {
+  "o-9q9p-sanfranciscobayferry/south-san-francisco-from-oakland-alameda.ics": {
     "gtfs_route": "SB:SSF",
-    "direction": "from-hub",
+    "direction": "to-hub",
     "terminals": [
       "7208",
       "7209"
     ]
   },
-  "o-9q9p-sanfranciscobayferry/south-san-francisco-to-south-san-francisco.ics": {
+  "o-9q9p-sanfranciscobayferry/south-san-francisco-to-oakland-alameda.ics": {
     "gtfs_route": "SB:SSF",
-    "direction": "to-hub",
+    "direction": "from-hub",
     "terminals": [
       "7208",
       "7209"

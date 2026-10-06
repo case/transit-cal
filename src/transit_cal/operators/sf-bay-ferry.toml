@@ -52,8 +52,8 @@ terminals = ["7208", "7209"]
 
 [routes.hub]
 station = "7205"
-to = { slug = "to-south-san-francisco", name = "To South San Francisco" }
-from = { slug = "to-east-bay", name = "To East Bay" }
+to = { slug = "from-oakland-alameda", name = "From Oakland & Alameda" }
+from = { slug = "to-oakland-alameda", name = "To Oakland & Alameda" }
 
 [[routes]]
 slug = "oakland-alameda-water-shuttle"
@@ -71,43 +71,66 @@ from = { slug = "to-alameda-landing", name = "To Alameda Landing" }
 name = "SF Ferry Building"
 gate = "Gate E"
 address = "1 Ferry Building, San Francisco, CA 94111"
+place = "San Francisco Ferry Building Gate E"
 
 [stops."72012"]
 name = "SF Ferry Building"
 gate = "Gate G"
 address = "1 Ferry Building, San Francisco, CA 94111"
+place = "San Francisco Ferry Building Gate G"
 
 [stops."72013"]
 name = "SF Ferry Building"
 gate = "Gate F"
 address = "1 Ferry Building, San Francisco, CA 94111"
+place = "San Francisco Ferry Building Gate F"
 
 [stops."7206"]
 name = "Harbor Bay"
+address = "215 Adelphian Way, Alameda, CA 94502"
+place = "Harbor Bay Ferry Terminal"
 
 [stops."7207"]
 name = "Seaplane Lagoon"
+address = "1701 Ferry Point Road, Alameda, CA 94501"
+place = "Seaplane Lagoon Ferry Terminal"
 
 [stops."7208"]
 name = "Main St Alameda"
+address = "2990 Main Street, Alameda, CA 94501"
+place = "Main Street Alameda Ferry Terminal"
 
 [stops."7209"]
 name = "Oakland"
+address = "10 Clay Street, Oakland, CA 94607"
+place = "Oakland Ferry Terminal"
 
 [stops."7211"]
 name = "Richmond"
+address = "1453 Harbour Way South, Richmond, CA 94804"
+place = "Richmond Ferry Terminal"
 
 [stops."7212"]
 name = "Vallejo"
+address = "289 Mare Island Way, Vallejo, CA 94590"
+place = "Vallejo Ferry Terminal"
 
 [stops."7213"]
 name = "Mare Island"
+address = "1050 Nimitz Avenue, Vallejo, CA 94592"
+place = "Mare Island Ferry Terminal"
 
 [stops."7205"]
 name = "South San Francisco"
+address = "911 Marina Blvd, South San Francisco, CA 94080"
+place = "South San Francisco Ferry Terminal"
 
 [stops."7215"]
 name = "Jack London Square"
+address = "Foot of Broadway, Jack London Square, Oakland, CA 94607"
+place = "Jack London Square Water Shuttle Dock"
 
 [stops."7216"]
 name = "Alameda Landing"
+address = "Bohol Circle Immigrant Park, foot of 5th Street, Alameda, CA 94501"
+place = "Alameda Landing Water Shuttle Dock"

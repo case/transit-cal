@@ -88,6 +88,10 @@ def test_routes_use_the_operator_hub_unless_they_have_their_own(tmp_path: Path) 
         ('slug = "south"', 'slug = "north"', "route slug 'north' used twice"),
         ('slug = "south"', 'slug = "../south"', "bad slug '../south'"),
         ('slug = "from-hub"', 'slug = "to-hub"', "to and from slugs are both 'to-hub'"),
+        ('slug = "to-s0"', 'slug = "to-south"', "direction 'to-south' repeats route 'south'"),
+        ('slug = "from-s0"', 'slug = "from-south"', "direction 'from-south' repeats route 'south'"),
+        ('slug = "from-s0"', 'slug = "s0"', "direction 's0' must start with to- or from-"),
+        ('slug = "to-s0"', 'slug = "towards-s0"', "direction 'towards-s0' must start with to- or"),
         ("[hub]", "[hub", "test-ferry.toml"),
         ('onestop_id = "o-test-ferry"', 'onestop_id = "o-x/../../etc"', "bad onestop_id"),
         ('onestop_id = "o-test-ferry"', 'onestop_id = "O-Test-Ferry"', "bad onestop_id"),
@@ -127,11 +131,11 @@ def test_onestop_ids_in_transitland_form_load(tmp_path: Path, onestop_id: str) -
 
 
 def test_feed_names_that_repeat_within_an_operator_raise(tmp_path: Path) -> None:
-    # north + to-hub and north-to + hub both name the feed north-to-hub.ics.
-    text = VALID.replace('slug = "south"', 'slug = "north-to"').replace(
-        'to = { slug = "to-s0"', 'to = { slug = "hub"'
+    # north + to-hub-to-s0 and north-to-hub + to-s0 both name the feed north-to-hub-to-s0.ics.
+    text = VALID.replace('slug = "south"', 'slug = "north-to-hub"').replace(
+        'to = { slug = "to-hub"', 'to = { slug = "to-hub-to-s0"'
     )
-    with pytest.raises(CatalogError, match="feed name 'north-to-hub' used twice"):
+    with pytest.raises(CatalogError, match="feed name 'north-to-hub-to-s0' used twice"):
         load_operators(write(tmp_path, text))
 
 
@@ -142,3 +146,20 @@ def test_two_operators_with_one_onestop_id_raise(tmp_path: Path) -> None:
         match="test-ferry.toml: onestop_id 'o-test-ferry' also used by another-ferry.toml",
     ):
         load_operators(write(tmp_path, VALID))
+
+
+def test_a_direction_may_share_a_word_with_its_route(tmp_path: Path) -> None:
+    text = VALID.replace('slug = "to-s0"', 'slug = "to-southbank"')
+    assert load_operators(write(tmp_path, text))[0].routes[1].hub.to.slug == "to-southbank"
+
+
+def test_an_operator_hub_every_route_overrides_still_needs_direction_prefixes(
+    tmp_path: Path,
+) -> None:
+    text = VALID.replace('slug = "to-hub"', 'slug = "hub"').replace(
+        'terminals = ["n1", "n2"]\n',
+        'terminals = ["n1", "n2"]\n\n[routes.hub]\nstation = "n0"\n'
+        'to = { slug = "to-n0", name = "To N0" }\nfrom = { slug = "from-n0", name = "From N0" }\n',
+    )
+    with pytest.raises(CatalogError, match="direction 'hub' must start with to- or from-"):
+        load_operators(write(tmp_path, text))
