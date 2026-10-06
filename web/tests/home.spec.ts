@@ -16,3 +16,14 @@ test("healthz returns OK", async ({ request }) => {
   expect(res.status()).toBe(200);
   expect(await res.text()).toContain("200 OK");
 });
+
+test("home page breaks no Content-Security-Policy rule", async ({ page }) => {
+  const violations: string[] = [];
+  page.on("console", (msg) => {
+    if (msg.text().includes("Content Security Policy")) violations.push(msg.text());
+  });
+  await page.goto("/");
+
+  await expect(page.getByRole("contentinfo")).toContainText(`© ${new Date().getFullYear()}`);
+  expect(violations).toEqual([]);
+});
