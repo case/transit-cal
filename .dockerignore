@@ -1,5 +1,6 @@
 *
 !Caddyfile
+!Caddyfile.common
 !web/eleventy.config.js
 !web/package.json
 !web/pnpm-lock.yaml

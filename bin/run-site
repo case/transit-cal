@@ -1,7 +1,66 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/usr/bin/env python3
+"""Serve the site with live reload, and the feeds in FEEDS, through Caddyfile.dev.
 
-cd "$(dirname "$0")/.."
+Caddy listens on PORT (8080) and passes pages to the 11ty dev server on ELEVENTY_PORT (8081).
+Feeds come from FEEDS/current (out/feeds/current), as bin/build-feeds leaves them.
+Exits when either server does, stopping the other.
+"""
 
-# Dev server with live reload on all interfaces
-exec pnpm --dir web exec eleventy --serve --port="${PORT:-8080}"
+import os
+import shutil
+import signal
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+ELEVENTY = ROOT / "web" / "node_modules" / "@11ty" / "eleventy" / "cmd.cjs"
+
+
+def main() -> int:
+    port = os.environ.get("PORT", "8080")
+    eleventy_port = os.environ.get("ELEVENTY_PORT", "8081")
+    feeds = Path(os.environ.get("FEEDS", ROOT / "out" / "feeds")).resolve()
+    if not ELEVENTY.is_file() or shutil.which("caddy") is None:
+        print("Error: 11ty or Caddy is not installed. Run bin/setup.", file=sys.stderr)
+        return 1
+    if not (feeds / "current").is_dir():
+        print(f"Warning: {feeds}/current is missing, so feed URLs return 404.", file=sys.stderr)
+        print("Run bin/build-feeds with TRANSITLAND_API_KEY set to fill it.", file=sys.stderr)
+
+    # A SIGTERM, as from Playwright, unwinds through the finally below like Ctrl-C does
+    signal.signal(signal.SIGTERM, lambda *_: sys.exit(143))
+    env = os.environ | {"PORT": port, "ELEVENTY_PORT": eleventy_port, "FEEDS": str(feeds)}
+    eleventy = ["node", str(ELEVENTY), "--serve", f"--port={eleventy_port}"]
+    caddy = ["caddy", "run", "--config", "Caddyfile.dev", "--adapter", "caddyfile"]
+    children: list[subprocess.Popen[bytes]] = []
+    try:
+        children.append(subprocess.Popen(eleventy, cwd=ROOT / "web", env=env))
+        children.append(subprocess.Popen(caddy, cwd=ROOT, env=env))
+        print(f"==> http://127.0.0.1:{port}", flush=True)
+        pid, status = os.wait()
+        name = "11ty" if pid == children[0].pid else "caddy"
+        code = os.waitstatus_to_exitcode(status)
+        print(f"Error: {name} exited with status {code}, so stopping.", file=sys.stderr)
+        return code or 1
+    except KeyboardInterrupt:
+        return 130
+    finally:
+        _stop(children)
+
+
+def _stop(children: list[subprocess.Popen[bytes]]) -> None:
+    """Terminate every child still running, killing any that ignore it for 5 seconds."""
+    for child in children:
+        if child.poll() is None:
+            child.terminate()
+    for child in children:
+        try:
+            child.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            child.kill()
+            child.wait()
+
+
+if __name__ == "__main__":
+    sys.exit(main())

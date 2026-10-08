@@ -55,7 +55,7 @@ RUN apk add --no-cache 'python3~3.14' 's6~2.15' \
     && install -d -o 10002 -g 10002 /feeds
 
 COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
-COPY Caddyfile /etc/caddy/Caddyfile
+COPY Caddyfile Caddyfile.common /etc/caddy/
 COPY --from=build /app/_site /srv
 COPY --from=validator /build/lib /opt/ics-validate/lib
 COPY --from=python /opt/transit-cal /opt/transit-cal

@@ -1,0 +1,12 @@
+# bin/run-site: feeds from FEEDS, pages from the 11ty dev server, whose live reload needs a script
+import Caddyfile.common
+
+:{$PORT:8080} {
+	import site "{$FEEDS:out/feeds}/current" "script-src 'self'; connect-src 'self' ws:; "
+	# Access logs would bury the 11ty output
+	log_skip
+
+	handle {
+		reverse_proxy 127.0.0.1:{$ELEVENTY_PORT:8081}
+	}
+}

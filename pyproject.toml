@@ -24,8 +24,14 @@ testpaths = ["tests"]
 addopts = "--strict-markers"
 filterwarnings = ["error"]
 
+[tool.ty.src]
+# Every Python file, plus the bin/ scripts written in Python
+include = ["**/*.py", "bin/run-site"]
+
 [tool.ruff]
 line-length = 100
+# bin/ scripts written in Python have no .py extension
+extend-include = ["bin/run-site"]
 
 [tool.ruff.lint]
 extend-select = ["E", "F", "W", "I", "B", "UP", "SIM", "RET"]

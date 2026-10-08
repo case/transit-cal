@@ -7,6 +7,6 @@ cd "$(dirname "$0")/.."
 echo "==> pytest"
 uv run --locked pytest
 
-# Playwright against the 11ty dev server; no Docker needed
+# Playwright against bin/run-site with fixture feeds; no Docker needed
 echo "==> playwright"
 pnpm --dir web exec playwright test

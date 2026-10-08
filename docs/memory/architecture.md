@@ -21,7 +21,7 @@ tests/      pytest suite; fixtures/synthetic/ is an invented GTFS feed and catal
 tests-image/ pytest suite for the production image, run by bin/test-image and never by bin/test
 tools/      in-image scripts (entrypoint, build-feeds, ics-validate) and the ical4j validator source and jar lock
 web/        11ty site: config, package.json, source/
-Caddyfile   production web server
+Caddyfile   production web server; Caddyfile.dev serves bin/run-site; both import Caddyfile.common
 Dockerfile  production image: site, Caddy, Python package, JRE and validator
 ```
 
@@ -50,6 +50,7 @@ Dockerfile  production image: site, Caddy, Python package, JRE and validator
 - `transit-cal fetch` refuses a download over 512 MiB, follows at most 3 redirects, each to HTTPS, and never reads a redirect's body; the key never follows a redirect. Redirect targets are not checked for private addresses: that would only matter if Transitland itself were compromised. The GTFS loader refuses a zip whose parsed files unpack past 2 GiB, and `zipfile` never reads past a member's declared size.
 - `publish` accepts only directories and regular `.ics` files, never a symlink, and refuses a stage missing any feed path the served release has, so a subscribed URL never starts returning 404. Releases are read-only (files 0444, directories 0555) once published; `prune` makes a release writable again only to delete it.
 - Caddy sends HSTS for one year and a CSP of `default-src 'none'` plus same-origin styles and images. The site has no scripts: the footer year is rendered at build time.
+- `bin/run-site` runs Caddy with `Caddyfile.dev` in front of the 11ty dev server, so local pages get live reload and local feeds come from `out/feeds` through the production feed rule and headers. Its CSP adds only `script-src 'self'` and `connect-src 'self' ws:`, for the reload client. Playwright starts it on port 8090 with the fixture feeds in `web/tests/fixtures/feed root/`.
 - Containment: only `s6-svscan` and its supervisors run as root, and the image has no setuid or setgid files (`tests-image` checks). Caddy (UID 10001) can read `/srv` and `/feeds`, write `/tmp` and reach the network; the builder (UID 10002) can also write the volume. Removing tools such as `wget` or `nc` would gain little, since `python3` and the JRE must stay and can do the same. Accepted risk: the scheduler holds the Transitland key under the same UID that parses GTFS and runs ical4j, so code execution through a parser bug could read it; it is a free-tier key with no billing attached.
 - Python is Alpine's `python3` 3.14, pinned by major version in the digest-pinned base: Alpine removes superseded package revisions, so exact pins break rebuilds. uv builds the virtualenv in a separate stage and is not in the final image.
 

@@ -27,12 +27,13 @@ ruff format --check
 echo "==> ty"
 uv run --locked ty check --error-on-warning
 
+# bin/ also holds Python scripts, which ruff and ty check
 echo "==> shellcheck"
-shellcheck bin/*
+grep -l '^#!/usr/bin/env bash' bin/* | xargs shellcheck
 
 # shfmt reads .editorconfig
 echo "==> shfmt"
-shfmt -d bin/
+grep -l '^#!/usr/bin/env bash' bin/* | xargs shfmt -d
 
 # actionlint also runs shellcheck on run: blocks
 echo "==> actionlint"
@@ -42,10 +43,13 @@ echo "==> hadolint"
 hadolint Dockerfile
 
 echo "==> caddy fmt"
-caddy fmt --diff Caddyfile >/dev/null
+for file in Caddyfile Caddyfile.common Caddyfile.dev; do
+  caddy fmt --diff "$file" >/dev/null
+done
 
 echo "==> caddy validate"
 caddy validate --config Caddyfile --adapter caddyfile
+caddy validate --config Caddyfile.dev --adapter caddyfile
 
 echo
 echo "✅ Lint passed."
