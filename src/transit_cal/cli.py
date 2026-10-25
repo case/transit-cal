@@ -1,4 +1,7 @@
-"""Command line: `fetch` downloads GTFS, `build GTFS_ZIP` writes feeds, `publish` serves them."""
+"""Command line: `fetch` downloads GTFS, `build GTFS_ZIP` writes feeds, `publish` serves them.
+
+`site-data OUT` writes the catalog as JSON for the website.
+"""
 
 import argparse
 import os
@@ -16,6 +19,7 @@ from transit_cal.gtfs import GtfsError
 from transit_cal.ics import IcsError
 from transit_cal.legs import LegError
 from transit_cal.publish import PublishError, prune, publish
+from transit_cal.site import write_site_data
 
 # An ASCII integer, as `date +%s` prints it: https://reproducible-builds.org/specs/source-date-epoch/
 EPOCH = re.compile(r"[0-9]+")
@@ -60,12 +64,21 @@ def main(argv: Sequence[str] | None = None) -> int:
     pub.add_argument("stage", type=Path, help="built and validated feed tree")
     pub.add_argument("--feeds", type=Path, required=True, help="served feeds directory")
     pub.add_argument("--keep", type=_positive, default=2, help="releases to keep (2)")
+    site = sub.add_parser("site-data", help="write the catalog as JSON for the website")
+    site.add_argument("out", type=Path, help="JSON file to write")
+    site.add_argument(
+        "--operators",
+        type=Path,
+        help="operator catalog directory, for tests and development (the packaged catalog)",
+    )
     args = parser.parse_args(argv)
 
     if args.command == "fetch":
         return _fetch(args.feed, args.out, os.environ.get("TRANSITLAND_API_KEY", ""))
     if args.command == "publish":
         return _publish(args.stage, args.feeds, args.keep)
+    if args.command == "site-data":
+        return _site_data(args.out, args.operators)
     now = _now()
     try:
         results = build_feeds(
@@ -111,6 +124,15 @@ def _publish(stage: Path, feeds: Path, keep: int) -> int:
         prune(release.parent, keep, spare=(release, previous))
     except OSError as e:
         _report("warning", f"published, but pruning failed: {e}")
+    return 0
+
+
+def _site_data(out: Path, operators: Path | None) -> int:
+    try:
+        write_site_data(load_operators(operators), out)
+    except EXPECTED as e:
+        _report("error", e)
+        return 1
     return 0
 
 

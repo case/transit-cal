@@ -67,7 +67,7 @@ def build_feeds(
         values = [getattr(op, attr) for op in operators]
         if twice := sorted({v for v in values if values.count(v) > 1}):
             raise BuildError(f"{attr} {twice[0]!r} given twice")
-    paths = [s.path for op in operators for r in op.routes for s in _specs(op, r)]
+    paths = [s.path for op in operators for r in op.routes for s in feed_specs(op, r)]
     if twice := sorted({p for p in paths if paths.count(p) > 1}):
         raise BuildError(f"feed path {twice[0]!r} built twice")
 
@@ -107,7 +107,7 @@ def build_feeds(
                 ]
             except ValueError as e:
                 raise BuildError(f"{op.slug}: route {route.slug!r}: {e}") from e
-            for spec in _specs(op, route):
+            for spec in feed_specs(op, route):
                 ours = [leg for leg in legs if leg.direction == spec.direction]
                 if not ours:
                     raise BuildError(f"{spec.path}: no departures in GTFS feed version {sha[:8]}")
@@ -128,7 +128,7 @@ def build_feeds(
                 generated.append((result, cal.to_ical()))
 
     for result, data in generated:
-        _write(result.file, data)
+        write_atomic(result.file, data)
     return [result for result, _ in generated]
 
 
@@ -148,7 +148,8 @@ def _sha1(path: Path) -> str:
         return hashlib.file_digest(f, lambda: hashlib.sha1(usedforsecurity=False)).hexdigest()
 
 
-def _specs(op: Operator, route: Route) -> list[FeedSpec]:
+def feed_specs(op: Operator, route: Route) -> list[FeedSpec]:
+    """The route's two feeds, to-hub then from-hub: the one place a route becomes feed paths."""
     return [
         FeedSpec(
             op.onestop_id,
@@ -194,7 +195,7 @@ def _local_date(leg: Leg, tz: ZoneInfo) -> date:
     return service_datetime(leg.service_date, leg.stops[0].departure, tz).date()
 
 
-def _write(path: Path, data: bytes) -> None:
+def write_atomic(path: Path, data: bytes) -> None:
     """Replace path with data atomically: a reader sees the old file or the new one."""
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, name = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")

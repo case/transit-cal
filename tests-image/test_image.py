@@ -99,12 +99,21 @@ def test_build_internals_are_never_served(server: Container, release_name: str, 
     assert server.get(path.format(release=release_name)).status == 404
 
 
-@pytest.mark.parametrize("path", ["/", f"/{RELEASE}"])
+def test_home_page_links_feeds_on_the_production_host(server: Container):
+    body = server.get("/").body.decode()
+    path = "o-9q8z-goldengateferry/larkspur-to-san-francisco.ics"
+
+    assert f'href="webcal://transit-cal.vedana.net/{path}"' in body
+    assert f"<code>https://transit-cal.vedana.net/{path}</code>" in body
+
+
+@pytest.mark.parametrize("path", ["/", f"/{RELEASE}", "/healthz"])
 def test_responses_carry_hsts_and_a_strict_content_security_policy(server: Container, path: str):
     headers = server.get(path).headers
 
     assert headers["strict-transport-security"] == "max-age=31536000"
     assert headers["content-security-policy"] == CSP
+    assert headers["x-robots-tag"] == "noindex, nofollow"
 
 
 def test_no_file_in_the_image_is_setuid_or_setgid(server: Container):

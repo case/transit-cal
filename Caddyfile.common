@@ -36,6 +36,8 @@
 		Referrer-Policy strict-origin-when-cross-origin
 		# One year, on Railway's domain only; add includeSubDomains once on our own domain
 		Strict-Transport-Security "max-age=31536000"
+		# Until launch; the meta tag in base.njk cannot reach feeds or /healthz
+		X-Robots-Tag "noindex, nofollow"
 		# The site has same-origin CSS and no scripts, forms or frames
 		Content-Security-Policy "default-src 'none'; {args[1]}style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
 	}

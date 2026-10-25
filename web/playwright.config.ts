@@ -17,6 +17,8 @@ export default defineConfig({
       // The space proves Caddyfile.dev quotes the feeds path
       env: { PORT: "8090", ELEVENTY_PORT: "8091", FEEDS: "tests/fixtures/feed root" },
       reuseExistingServer: false,
+      // SIGTERM lets bin/run-site stop both servers (up to 5 s each) and remove its build folder
+      gracefulShutdown: { signal: "SIGTERM", timeout: 15000 },
     },
   }),
 });

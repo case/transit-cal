@@ -16,11 +16,11 @@ import pytest
 from icalendar import Calendar
 
 from transit_cal import cli
-from transit_cal.build import build_feeds
+from transit_cal.build import build_feeds, feed_specs
 from transit_cal.catalog import load_operators
 from transit_cal.gtfs import Feed, load
-from transit_cal.ics import FeedSpec, leg_key
-from transit_cal.legs import FROM_HUB, TO_HUB, Leg, build_legs
+from transit_cal.ics import leg_key
+from transit_cal.legs import Leg, build_legs
 
 FIXTURES = sorted((Path(__file__).parent / "fixtures").glob("*/*/*.json"))
 OPERATORS = {op.slug: op for op in load_operators()}
@@ -136,8 +136,8 @@ def test_no_two_legs_share_a_uid_key(sha1: str) -> None:
         days = service_days(feed)
         assert days, op.slug
         for route in op.routes:
-            for direction, d in ((TO_HUB, route.hub.to), (FROM_HUB, route.hub.from_)):
-                spec = FeedSpec(op.onestop_id, "", route.slug, "", direction, d.slug, "", "", "")
+            for spec in feed_specs(op, route):
+                direction = spec.direction
                 seen: dict[str, Leg] = {}
                 for day in days:
                     for j in build_legs(
@@ -159,8 +159,8 @@ def test_building_the_pinned_feed_writes_every_published_path(sha1: str, tmp_pat
     results = build_feeds(
         path, list(OPERATORS.values()), tmp_path, start=start, days=90, stamp=stamp
     )
-    manifest = json.loads((Path(__file__).parent / "published-feeds.json").read_text("utf-8"))
-    assert {r.spec.path for r in results} == manifest.keys()
+    current = {s.path for op in OPERATORS.values() for r in op.routes for s in feed_specs(op, r)}
+    assert {r.spec.path for r in results} == current
     for r in results:
         cal = Calendar.from_ical(r.file.read_bytes())
         assert cal.walk("VEVENT"), r.spec.path

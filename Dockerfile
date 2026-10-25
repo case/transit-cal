@@ -1,20 +1,3 @@
-FROM node:26.10.0-alpine@sha256:0b36e8c136b94cd4fcf02188228e76c31ad5872eef3fec8cbd2eee500cfd9e80 AS build
-
-WORKDIR /app
-
-# Manifests first, so dependency layers cache across content changes
-COPY web/package.json web/pnpm-lock.yaml web/pnpm-workspace.yaml ./
-
-# Install the pnpm that package.json pins
-RUN PNPM_VERSION="$(node -p "require('./package.json').packageManager.split('@')[1]")" \
-    && npm install -g "pnpm@${PNPM_VERSION:?packageManager missing from package.json}"
-
-RUN pnpm install --frozen-lockfile --prod --ignore-scripts
-
-COPY web/eleventy.config.js ./
-COPY web/source/ ./source/
-RUN pnpm build
-
 # Compiles the ical4j validator; the JDK stays in this stage
 FROM eclipse-temurin:25-jdk-alpine-3.24@sha256:3fd2d245c4e0eba615fe366a71b8bd25f5db7104f53e4026b24bf508b880bd2a AS validator
 
@@ -45,7 +28,28 @@ WORKDIR /build
 COPY pyproject.toml uv.lock README.md ./
 COPY src/ ./src/
 ENV UV_PROJECT_ENVIRONMENT=/opt/transit-cal UV_PYTHON=/usr/bin/python3 UV_PYTHON_DOWNLOADS=never
-RUN uv sync --locked --no-dev --no-editable --compile-bytecode
+# Then the catalog as JSON, for the site build below
+RUN uv sync --locked --no-dev --no-editable --compile-bytecode \
+    && /opt/transit-cal/bin/transit-cal site-data /opt/site-data/catalog.json
+
+# Builds the site, after the Python stage so it can read the catalog JSON
+FROM node:26.10.0-alpine@sha256:0b36e8c136b94cd4fcf02188228e76c31ad5872eef3fec8cbd2eee500cfd9e80 AS build
+
+WORKDIR /app
+
+# Manifests first, so dependency layers cache across content changes
+COPY web/package.json web/pnpm-lock.yaml web/pnpm-workspace.yaml ./
+
+# Install the pnpm that package.json pins
+RUN PNPM_VERSION="$(node -p "require('./package.json').packageManager.split('@')[1]")" \
+    && npm install -g "pnpm@${PNPM_VERSION:?packageManager missing from package.json}"
+
+RUN pnpm install --frozen-lockfile --prod --ignore-scripts
+
+COPY web/eleventy.config.js ./
+COPY web/source/ ./source/
+COPY --from=python /opt/site-data/catalog.json ./source/_data/catalog.json
+RUN pnpm build
 
 FROM eclipse-temurin:25-jre-alpine-3.24@sha256:3c0a9084927a221ccd1d007fcaf614465672c0af37aaa834c5184483afe56d61
 

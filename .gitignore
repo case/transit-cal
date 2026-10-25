@@ -229,3 +229,4 @@ playwright-report/
 
 # transit-cal build output
 /out/
+/web/source/_data/catalog.json

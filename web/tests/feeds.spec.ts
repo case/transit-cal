@@ -7,6 +7,7 @@ test("a published feed path is served as a calendar", async ({ request }) => {
   const res = await request.get("/o-test-ferry/oak-to-hub.ics");
   expect(res.status()).toBe(200);
   expect(res.headers()["content-type"]).toMatch(/^text\/calendar/);
+  expect(res.headers()["x-robots-tag"]).toBe("noindex, nofollow");
   expect(await res.text()).toContain("BEGIN:VCALENDAR");
 });
 

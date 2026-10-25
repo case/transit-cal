@@ -11,9 +11,8 @@ from pathlib import Path
 
 import pytest
 
+from transit_cal.build import feed_specs
 from transit_cal.catalog import load_operators
-from transit_cal.ics import FeedSpec
-from transit_cal.legs import FROM_HUB, TO_HUB
 
 MANIFEST = Path(__file__).parent / "published-feeds.json"
 Owner = dict[str, str | list[str]]
@@ -23,11 +22,10 @@ def current_feeds() -> dict[str, Owner]:
     feeds = {}
     for op in load_operators():
         for r in op.routes:
-            for direction, d in ((TO_HUB, r.hub.to), (FROM_HUB, r.hub.from_)):
-                spec = FeedSpec(op.onestop_id, "", r.slug, "", direction, d.slug, "", "", "")
+            for spec in feed_specs(op, r):
                 feeds[spec.path] = {
                     "gtfs_route": r.gtfs_route,
-                    "direction": direction,
+                    "direction": spec.direction,
                     "terminals": sorted(r.terminals),
                 }
     return feeds

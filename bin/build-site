@@ -3,5 +3,6 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-# Builds the site into web/_site/
+# Builds the site into web/_site/, from the catalog JSON that site-data writes
+uv run --locked transit-cal site-data web/source/_data/catalog.json
 exec pnpm --dir web build

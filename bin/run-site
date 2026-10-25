@@ -3,6 +3,8 @@
 
 Caddy listens on PORT (8080) and passes pages to the 11ty dev server on ELEVENTY_PORT (8081).
 Feeds come from FEEDS/current (out/feeds/current), as bin/build-feeds leaves them.
+The catalog JSON is written first; feed links use SITE_URL (http://127.0.0.1:PORT).
+Each run builds into its own temporary folder, so two runs never overwrite each other's pages.
 Exits when either server does, stopping the other.
 """
 
@@ -11,10 +13,12 @@ import shutil
 import signal
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 ELEVENTY = ROOT / "web" / "node_modules" / "@11ty" / "eleventy" / "cmd.cjs"
+CATALOG = ROOT / "web" / "source" / "_data" / "catalog.json"
 
 
 def main() -> int:
@@ -28,11 +32,34 @@ def main() -> int:
         print(f"Warning: {feeds}/current is missing, so feed URLs return 404.", file=sys.stderr)
         print("Run bin/build-feeds with TRANSITLAND_API_KEY set to fill it.", file=sys.stderr)
 
+    site_data = ["uv", "run", "--locked", "transit-cal", "site-data", str(CATALOG)]
+    if subprocess.run(site_data, cwd=ROOT, check=False).returncode != 0:
+        return 1
+
     # A SIGTERM, as from Playwright, unwinds through the finally below like Ctrl-C does
     signal.signal(signal.SIGTERM, lambda *_: sys.exit(143))
-    env = os.environ | {"PORT": port, "ELEVENTY_PORT": eleventy_port, "FEEDS": str(feeds)}
-    eleventy = ["node", str(ELEVENTY), "--serve", f"--port={eleventy_port}"]
+    site_url = os.environ.get("SITE_URL", f"http://127.0.0.1:{port}")
+    env = os.environ | {
+        "PORT": port,
+        "ELEVENTY_PORT": eleventy_port,
+        "FEEDS": str(feeds),
+        "SITE_URL": site_url,
+    }
     caddy = ["caddy", "run", "--config", "Caddyfile.dev", "--adapter", "caddyfile"]
+    with tempfile.TemporaryDirectory(prefix="transit-cal-site-") as output:
+        eleventy = [
+            "node",
+            str(ELEVENTY),
+            "--serve",
+            f"--port={eleventy_port}",
+            f"--output={output}",
+        ]
+        return _serve([eleventy, caddy], env, port)
+
+
+def _serve(commands: list[list[str]], env: dict[str, str], port: str) -> int:
+    """Run 11ty then Caddy until either exits or the run is interrupted, then stop both."""
+    eleventy, caddy = commands
     children: list[subprocess.Popen[bytes]] = []
     try:
         children.append(subprocess.Popen(eleventy, cwd=ROOT / "web", env=env))

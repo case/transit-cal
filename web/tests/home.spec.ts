@@ -11,6 +11,11 @@ test("home page renders with header, footer and styles", async ({ page }) => {
   expect((await css).status()).toBe(200);
 });
 
+test("home page asks crawlers not to index or follow it", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("meta[name=\"robots\"]")).toHaveAttribute("content", "noindex, nofollow");
+});
+
 test("healthz returns OK", async ({ request }) => {
   const res = await request.get("/healthz");
   expect(res.status()).toBe(200);

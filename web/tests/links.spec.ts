@@ -12,7 +12,9 @@ for (const path of pages) {
         target: a.getAttribute("target"),
       }))
     );
-    const external = links.filter((l) => new URL(l.href).origin !== origin);
+    // Subscribe links are webcal:, which calendar apps handle without a new tab
+    const web = links.filter((l) => ["http:", "https:"].includes(new URL(l.href).protocol));
+    const external = web.filter((l) => new URL(l.href).origin !== origin);
     expect(external.length).toBeGreaterThan(0);
     for (const link of external) {
       expect(link.target, link.href).toBe("_blank");

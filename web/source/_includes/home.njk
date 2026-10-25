@@ -1,0 +1,20 @@
+---
+layout: base.njk
+---
+{{ content | safe }}
+{% for operator in catalog.operators %}
+  <section>
+    <h2><a href="{{ operator.website }}" target="_blank">{{ operator.name }}</a></h2>
+    {% for route in operator.routes %}
+      <article>
+        <h3><a href="{{ route.url }}" target="_blank">{{ route.name }}</a></h3>
+        <ul>
+          {% for feed in route.feeds %}
+            {% set url = feed.path | feedUrl(site.url) %}
+            <li><a href="{{ url | webcal }}">{{ feed.name }}</a> <code>{{ url }}</code></li>
+          {% endfor %}
+        </ul>
+      </article>
+    {% endfor %}
+  </section>
+{% endfor %}

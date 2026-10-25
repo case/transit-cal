@@ -20,7 +20,7 @@ src/        transit_cal Python package: GTFS to .ics feeds, operator catalog
 tests/      pytest suite; fixtures/synthetic/ is an invented GTFS feed and catalog
 tests-image/ pytest suite for the production image, run by bin/test-image and never by bin/test
 tools/      in-image scripts (entrypoint, build-feeds, ics-validate) and the ical4j validator source and jar lock
-web/        11ty site: config, package.json, source/
+web/        11ty site: config, package.json, source/ (_data/catalog.json is generated, never committed)
 Caddyfile   production web server; Caddyfile.dev serves bin/run-site; both import Caddyfile.common
 Dockerfile  production image: site, Caddy, Python package, JRE and validator
 ```
@@ -51,6 +51,9 @@ Dockerfile  production image: site, Caddy, Python package, JRE and validator
 - `publish` accepts only directories and regular `.ics` files, never a symlink, and refuses a stage missing any feed path the served release has, so a subscribed URL never starts returning 404. Releases are read-only (files 0444, directories 0555) once published; `prune` makes a release writable again only to delete it.
 - Caddy sends HSTS for one year and a CSP of `default-src 'none'` plus same-origin styles and images. The site has no scripts: the footer year is rendered at build time.
 - `bin/run-site` runs Caddy with `Caddyfile.dev` in front of the 11ty dev server, so local pages get live reload and local feeds come from `out/feeds` through the production feed rule and headers. Its CSP adds only `script-src 'self'` and `connect-src 'self' ws:`, for the reload client. Playwright starts it on port 8090 with the fixture feeds in `web/tests/fixtures/feed root/`.
+- The site reads the catalog through `transit-cal site-data`, which writes `web/source/_data/catalog.json` from the same `feed_specs` the build uses, so feed paths have one source. `bin/run-site` and `bin/build-site` run it first; in the image, the Python stage writes it and the Node stage copies it in before `pnpm build`. 11ty stops with a message when it is missing.
+- Feed links use the origin in `SITE_URL` (`_data/site.js`, default `https://transit-cal.vedana.net`; `bin/run-site` sets its own address). Each feed gets a `webcal:` subscribe link and its plain URL to copy.
+- Until launch, pages carry a `noindex, nofollow` robots meta tag and every response an `X-Robots-Tag` header; there is no `robots.txt`, so crawlers can see them.
 - Containment: only `s6-svscan` and its supervisors run as root, and the image has no setuid or setgid files (`tests-image` checks). Caddy (UID 10001) can read `/srv` and `/feeds`, write `/tmp` and reach the network; the builder (UID 10002) can also write the volume. Removing tools such as `wget` or `nc` would gain little, since `python3` and the JRE must stay and can do the same. Accepted risk: the scheduler holds the Transitland key under the same UID that parses GTFS and runs ical4j, so code execution through a parser bug could read it; it is a free-tier key with no billing attached.
 - Python is Alpine's `python3` 3.14, pinned by major version in the digest-pinned base: Alpine removes superseded package revisions, so exact pins break rebuilds. uv builds the virtualenv in a separate stage and is not in the final image.
 

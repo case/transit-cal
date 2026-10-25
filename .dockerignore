@@ -6,6 +6,8 @@
 !web/pnpm-lock.yaml
 !web/pnpm-workspace.yaml
 !web/source/
+# The image writes its own, from the catalog it ships
+web/source/_data/catalog.json
 !tools/IcsValidate.java
 !tools/ics-validate
 !tools/ics-validate.lock

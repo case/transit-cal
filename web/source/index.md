@@ -1,7 +1,7 @@
 ---
 title: transit-cal
 description: Transit schedules as calendar feeds.
-layout: base.njk
+layout: home.njk
 ---
 
 # transit-cal

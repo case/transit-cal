@@ -41,6 +41,7 @@ class Response:
     status: int
     content_type: str  # The media type, or "" when the header is missing
     headers: dict[str, str] = field(default_factory=dict, compare=False)
+    body: bytes = field(default=b"", compare=False)
 
 
 @dataclass(frozen=True)
@@ -81,10 +82,10 @@ class Container:
         try:
             connection.request("GET", path)
             response = connection.getresponse()
-            response.read()
+            body = response.read()
             header = response.getheader("Content-Type") or ""
             headers = {name.lower(): value for name, value in response.getheaders()}
-            return Response(response.status, header.split(";")[0].strip(), headers)
+            return Response(response.status, header.split(";")[0].strip(), headers, body)
         finally:
             connection.close()
 
