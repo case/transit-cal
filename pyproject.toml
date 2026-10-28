@@ -13,7 +13,7 @@ transit-cal = "transit_cal.cli:main"
 transit-cal-schedule = "transit_cal.schedule:main"
 
 [dependency-groups]
-dev = ["pytest>=9.1", "ty==0.0.84"]
+dev = ["pytest>=9.1", "ty==0.0.87"]
 
 [build-system]
 requires = ["uv_build>=0.12.23,<0.13.0"]
