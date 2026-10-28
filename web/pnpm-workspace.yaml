@@ -3,3 +3,6 @@ engineStrict: true
 
 # Single-document lockfile until GitHub parses pnpm 12's: dependabot/dependabot-core#15904
 pmOnFail: ignore
+
+# 14 days, in minutes, matching renovate.json's minimumReleaseAge for transitive deps too
+minimumReleaseAge: 20160

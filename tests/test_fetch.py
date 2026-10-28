@@ -302,6 +302,19 @@ def test_fetch_refuses_a_fourth_redirect(server: Server, tmp_path: Path):
 
 
 @pytest.mark.usefixtures("loopback_redirects")
+def test_fetch_refuses_a_redirect_loop_between_two_urls(server: Server, tmp_path: Path):
+    def respond(handler: BaseHTTPRequestHandler) -> None:
+        send(handler, 302, b"", Location=f"{server.url}/{'b' if handler.path == '/a' else 'a'}")
+
+    server.respond = respond
+
+    with pytest.raises(FetchError):
+        fetch(server, tmp_path)
+    assert [path for path, _ in server.requests if path != META_PATH] == [PATH, "/a", "/b"]
+    assert list(tmp_path.iterdir()) == []
+
+
+@pytest.mark.usefixtures("loopback_redirects")
 def test_fetch_never_reads_the_body_of_a_redirect(server: Server, tmp_path: Path):
     def endless(handler: BaseHTTPRequestHandler) -> None:
         if handler.path.startswith("/blob"):

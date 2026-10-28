@@ -11,4 +11,5 @@ Agents: consult before suggesting layout, naming, dependencies, vendors, or conv
 
 ## Log (newest first)
 
+- [2026-10-26 Renovate](log/2026-10-26-renovate.md) - how Renovate updates pins that live in two places, and the 14-day wait
 - [2026-10-03 Bootstrap memory system](log/2026-10-03-bootstrap.md) - initial setup of this memory system

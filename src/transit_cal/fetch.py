@@ -87,9 +87,11 @@ def fetch_latest(
 
 
 class _HttpsRedirects(urllib.request.HTTPRedirectHandler):
-    """Follow at most 3 redirects, each to HTTPS."""
+    """Follow at most 3 redirects, each to HTTPS, never revisiting a URL."""
 
     max_redirections = 3
+    # urllib's default of 4 visits per URL lets two URLs alternate past max_redirections
+    max_repeats = 1
 
     def redirect_request(
         self,

@@ -1,0 +1,130 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
+  "dependencyDashboard": false,
+  "minimumReleaseAge": "14 days",
+  "prBodyColumns": ["Package", "Package file", "Update", "Change", "Pending"],
+  "vulnerabilityAlerts": {
+    "minimumReleaseAge": "0 days",
+    "labels": ["security"]
+  },
+  "enabledManagers": ["dockerfile", "mise", "pep621", "npm", "github-actions", "custom.regex"],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["* * 1-7 * *"]
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Jars in tools/ics-validate.lock. Renovate bumps the path; bin/renovate-postupgrade writes the new hash.",
+      "managerFilePatterns": ["/^tools/ics-validate\\.lock$/"],
+      "matchStrings": [
+        "[0-9a-f]{64} (?<groupPath>[A-Za-z0-9_.\\-/]+)/(?<artifact>[A-Za-z0-9_.\\-]+)/(?<currentValue>[A-Za-z0-9_.\\-]+)/[A-Za-z0-9_.\\-]+\\.jar"
+      ],
+      "datasourceTemplate": "maven",
+      "depNameTemplate": "{{{replace '/' '.' groupPath}}}:{{{artifact}}}"
+    }
+  ],
+  "postUpgradeTasks": {
+    "commands": ["bin/renovate-postupgrade"],
+    "fileFilters": ["mise.toml", "pyproject.toml", "tools/ics-validate.lock"],
+    "executionMode": "branch"
+  },
+  "packageRules": [
+    {
+      "description": "Pin Docker base images by SHA256 digest for supply-chain integrity and reproducible builds. Renovate opens a bump PR whenever the upstream tag's digest rolls.",
+      "matchDatasources": ["docker"],
+      "pinDigests": true
+    },
+    {
+      "description": "One PR for all Dockerfile FROM bumps",
+      "matchManagers": ["dockerfile"],
+      "groupName": "docker images",
+      "prBodyNotes": ["**Deploy**: auto — Railway rebuilds the image on merge to `main`."]
+    },
+    {
+      "description": "One PR for the mise.toml tools Renovate owns",
+      "matchManagers": ["mise"],
+      "groupName": "mise tools",
+      "prBodyNotes": ["**Deploy**: none needed — `mise.toml` pins the tools `bin/lint` and `bin/test` run, locally and in CI. Run `mise install` to pick up the new versions."]
+    },
+    {
+      "description": "One PR for pyproject.toml and uv.lock",
+      "matchManagers": ["pep621"],
+      "groupName": "python dependencies",
+      "prBodyNotes": ["**Deploy**: auto — Railway rebuilds the image on merge to `main`."]
+    },
+    {
+      "description": "One PR for web/package.json and web/pnpm-lock.yaml",
+      "matchManagers": ["npm"],
+      "groupName": "npm dependencies",
+      "prBodyNotes": ["**Deploy**: auto — Railway rebuilds the image on merge to `main`."]
+    },
+    {
+      "description": "One PR for all .github/workflows/* bumps",
+      "matchManagers": ["github-actions"],
+      "groupName": "github-actions",
+      "prBodyNotes": ["**Deploy**: none needed — workflow definitions take effect on merge to `main`."]
+    },
+    {
+      "description": "mise.toml copies of caddy, node and uv follow the Dockerfile, and pnpm follows web/package.json, via bin/renovate-postupgrade. bin/lint fails if they drift.",
+      "matchManagers": ["mise"],
+      "matchDepNames": ["caddy", "node", "uv", "pnpm"],
+      "enabled": false
+    },
+    {
+      "description": "The image's Python is Alpine's python3~3.14, so a Python minor or major is a manual change with the Alpine tag.",
+      "matchManagers": ["mise"],
+      "matchDepNames": ["python"],
+      "matchUpdateTypes": ["major", "minor"],
+      "enabled": false
+    },
+    {
+      "description": "Node majors are a manual change: the Dockerfile, mise.toml and engines move together.",
+      "matchDepNames": ["node"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
+      "description": "Node's lower bound moves with the manual Node major change.",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["engines"],
+      "enabled": false
+    },
+    {
+      "description": "Java majors are a manual change: the Temurin tags and javac --release move together, from one LTS to the next.",
+      "matchDepNames": ["eclipse-temurin"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
+      "description": "The uv_build range follows the Dockerfile's uv via bin/renovate-postupgrade.",
+      "matchManagers": ["pep621"],
+      "matchDepTypes": ["build-system.requires"],
+      "enabled": false
+    },
+    {
+      "description": "Renovate's docker datasource has release timestamps only on Docker Hub, so without this the 14-day wait would hold this GHCR image forever.",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/astral-sh/uv"],
+      "minimumReleaseAgeBehaviour": "timestamp-optional"
+    },
+    {
+      "description": "Monthly uv.lock and pnpm-lock.yaml refresh, so transitive pins such as tzdata move too.",
+      "matchUpdateTypes": ["lockFileMaintenance"],
+      "prBodyNotes": ["**Deploy**: auto — Railway rebuilds the image on merge to `main`."]
+    },
+    {
+      "description": "Major version bumps always land in their own PR regardless of grouping. Major bumps break things; review one at a time.",
+      "matchUpdateTypes": ["major"],
+      "groupName": null
+    },
+    {
+      "description": "The validator's jars stay in one PR even for majors, after the rule above, so slf4j-api and slf4j-nop move together.",
+      "matchManagers": ["custom.regex"],
+      "matchFileNames": ["tools/ics-validate.lock"],
+      "groupName": "ics-validate jars",
+      "prBodyNotes": ["**Deploy**: auto — Railway rebuilds the image on merge to `main`. `bin/test-feeds` runs the new jars in CI."]
+    }
+  ]
+}

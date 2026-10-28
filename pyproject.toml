@@ -24,14 +24,20 @@ testpaths = ["tests"]
 addopts = "--strict-markers"
 filterwarnings = ["error"]
 
+[tool.uv]
+# Renovate checks a proposed version's age; this holds uv's own resolution to the same 14 days
+exclude-newer = "14 days"
+
 [tool.ty.src]
 # Every Python file, plus the bin/ scripts written in Python
-include = ["**/*.py", "bin/run-site"]
+include = ["**/*.py", "bin/run-site", "bin/renovate-postupgrade"]
 
 [tool.ruff]
 line-length = 100
 # bin/ scripts written in Python have no .py extension
-extend-include = ["bin/run-site"]
+extend-include = ["bin/run-site", "bin/renovate-postupgrade"]
+# Renovate runs this on its image's Python 3.12
+per-file-target-version = { "bin/renovate-postupgrade" = "py312" }
 
 [tool.ruff.lint]
 extend-select = ["E", "F", "W", "I", "B", "UP", "SIM", "RET"]

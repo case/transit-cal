@@ -14,7 +14,8 @@ The current implementation of transit-cal. Replace any of this and the [product]
 
 ```
 bin/        setup, lint, test, ci; build-site, run-site, build-image, test-image, test-feeds;
-            build-feeds and run-image run the production image locally against out/feeds
+            build-feeds and run-image run the production image locally against out/feeds;
+            renovate-postupgrade keeps Renovate's pin copies in step
 docs/       memory and plans
 src/        transit_cal Python package: GTFS to .ics feeds, operator catalog
 tests/      pytest suite; fixtures/synthetic/ is an invented GTFS feed and catalog
@@ -68,6 +69,7 @@ A feed's path, `/<onestop_id>/<route>-<direction>.ics`, is its subscription URL,
 
 - Transit terms follow GTFS. A **leg** is one ride on one vehicle, boarding to alighting; it can span an in-seat transfer. A **block** is one vehicle's sequence of trips. A **service day** is GTFS's. Rider-facing text says "departures". Code and comments use no mode-specific words such as "sailing" or "vessel". Sources: [GTFS reference](https://gtfs.org/documentation/schedule/reference/), transitland-lib's `Itinerary` and `Leg`.
 - Direction labels complete the route label into a natural trip description. Prefer `to-<destination>` ("To <destination>"); when the destination stop or place is the route's own name, use `from-<origin>` ("From <origin>") instead. A route name that only mentions a city does not count: the water shuttle stays `to-jack-london-square` and `to-alameda-landing`. Examples: `larkspur-to-san-francisco` and `larkspur-from-san-francisco`; `oakland-alameda-water-shuttle-to-jack-london-square`; `south-san-francisco-from-oakland-alameda`. The catalog checks that every direction slug starts with `to-` or `from-` and never repeats its route's slug; choosing the right endpoint is a review judgement.
+- Renovate, self-hosted from `case/homelab`, opens dependency PRs from `renovate.json`. The `Dockerfile` owns the caddy, node and uv versions and `web/package.json` owns pnpm; `bin/renovate-postupgrade` copies them into `mise.toml` and the `uv_build` range, and rewrites jar hashes in `tools/ics-validate.lock`. Every version waits 14 days, in uv (`exclude-newer`) and pnpm (`minimumReleaseAge`) too. Why: [2026-10-26 Renovate](log/2026-10-26-renovate.md)
 - Feeds ask clients to poll at most daily (`REFRESH-INTERVAL` and `X-PUBLISHED-TTL` of `P1D`). Upstream operator schedules change rarely, and RFC 7986 makes the value a minimum, not a schedule.
 
 <How we do things: version pinning, linting, testing, git hooks, CI runner, deploy flow.>

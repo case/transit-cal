@@ -39,6 +39,10 @@ grep -l '^#!/usr/bin/env bash' bin/* | xargs shfmt -d
 echo "==> actionlint"
 actionlint
 
+# Copies of the Dockerfile and package.json pins, which Renovate updates through this hook
+echo "==> pinned versions"
+bin/renovate-postupgrade --check
+
 echo "==> hadolint"
 hadolint Dockerfile
 

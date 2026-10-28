@@ -7,6 +7,14 @@ cd "$(dirname "$0")/.."
 echo "==> pytest"
 uv run --locked pytest
 
+# Renovate runs bin/renovate-postupgrade on its image's Python 3.12, so its tests run there too
+echo "==> pytest renovate-postupgrade on Python 3.12"
+requirements="$(mktemp)"
+trap 'rm -f "$requirements"' EXIT
+uv export --locked --only-group dev --no-hashes --no-emit-project --output-file "$requirements" >/dev/null
+uv run --no-project --python 3.12 --with-requirements "$requirements" \
+  pytest tests/test_renovate_postupgrade.py
+
 # Playwright against bin/run-site with fixture feeds; no Docker needed
 echo "==> playwright"
 pnpm --dir web exec playwright test

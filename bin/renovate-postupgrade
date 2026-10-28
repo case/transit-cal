@@ -1,0 +1,344 @@
+#!/usr/bin/env python3
+"""Keep the pins Renovate updates one at a time in step. Renovate runs it after each update.
+
+- mise.toml copies caddy, node and uv from the Dockerfile, and pnpm from web/package.json.
+- pyproject.toml's uv_build range follows the Dockerfile's uv.
+- Each jar in tools/ics-validate.lock whose path differs from HEAD's gets its SHA-256 recomputed.
+With --check, as bin/lint runs it, nothing is written and nothing is downloaded: it exits 1 if a
+copy is out of step or a lock line is malformed. Standard library only, on Python 3.12, since
+that is what the Renovate image runs.
+"""
+
+import hashlib
+import http.client
+import json
+import re
+import subprocess
+import sys
+import tomllib
+import urllib.error
+import urllib.parse
+import urllib.request
+from collections.abc import Callable
+from dataclasses import dataclass
+from pathlib import Path
+from typing import IO
+
+ROOT = Path(__file__).resolve().parent.parent
+LOCK = "tools/ics-validate.lock"
+MAVEN = "https://repo1.maven.org/maven2/"
+TIMEOUT_SECONDS = 60
+# The largest locked jar, ical4j, is ~1 MB
+MAX_JAR_BYTES = 64 * 1024 * 1024
+MAX_SHA1_BYTES = 1024
+
+# Each mise tool, the Dockerfile image it copies, and that image's tag with the version captured
+DOCKER_TOOLS = {
+    "caddy": ("caddy", re.compile(r"([0-9]+\.[0-9]+\.[0-9]+)")),
+    "node": ("node", re.compile(r"([0-9]+\.[0-9]+\.[0-9]+)-alpine")),
+    "uv": ("ghcr.io/astral-sh/uv", re.compile(r"([0-9]+\.[0-9]+\.[0-9]+)")),
+}
+# No conforming Dockerfile parser runs here, so FROM lines must take this one strict shape
+FROM = re.compile(
+    r"FROM (?P<image>[a-z0-9./_-]+):(?P<tag>[A-Za-z0-9._-]+)@sha256:[0-9a-f]{64}"
+    r"(?: AS [a-z0-9_-]+)?"
+)
+PNPM = re.compile(r"pnpm@([0-9]+\.[0-9]+\.[0-9]+)(?:\+[A-Za-z0-9.]+)?")
+VERSION = re.compile(r"([0-9]+)\.([0-9]+)\.([0-9]+)")
+SEGMENT = r"[A-Za-z0-9_][A-Za-z0-9_.-]*"
+# <sha256> <group path>/<artifact>/<version>/<artifact>-<version>.jar, as the Dockerfile reads it
+LOCK_LINE = re.compile(
+    rf"(?P<sha256>[0-9a-f]{{64}}) (?P<path>(?P<group>{SEGMENT}(?:/{SEGMENT})*)"
+    rf"/(?P<artifact>{SEGMENT})/(?P<version>{SEGMENT})/(?P=artifact)-(?P=version)\.jar)"
+)
+SHA1 = re.compile(r"[0-9a-fA-F]{40}")
+
+
+class PinError(ValueError):
+    """A pin is missing, malformed, out of step, or could not be refreshed."""
+
+
+@dataclass(frozen=True, slots=True)
+class Jar:
+    sha256: str
+    path: str
+    coordinate: str
+
+
+def docker_versions(dockerfile: str) -> dict[str, str]:
+    """The version of each mise tool the Dockerfile also pins. Raises PinError."""
+    lines = dockerfile.splitlines()
+    froms = [line for line in lines if (line.split(None, 1) or [""])[0].upper() == "FROM"]
+    parsed = []
+    for line in froms:
+        if (match := FROM.fullmatch(line)) is None:
+            raise PinError(f"Dockerfile: {line!r} is not FROM <image>:<tag>@sha256:<digest>")
+        parsed.append(match)
+    versions = {}
+    for tool, (image, tag) in DOCKER_TOOLS.items():
+        tags = [m["tag"] for m in parsed if m["image"] == image]
+        if len(tags) != 1:
+            raise PinError(f"Dockerfile: expected one FROM {image}, found {len(tags)}")
+        if (version := tag.fullmatch(tags[0])) is None:
+            raise PinError(f"Dockerfile: {image}:{tags[0]} does not match {tag.pattern}")
+        versions[tool] = version[1]
+    return versions
+
+
+def pnpm_version(package_json: str) -> str:
+    """The pnpm version web/package.json's packageManager names. Raises PinError."""
+    try:
+        manager = json.loads(package_json).get("packageManager")
+    except (json.JSONDecodeError, AttributeError) as e:
+        raise PinError(f"web/package.json: not a JSON object: {e}") from e
+    if not isinstance(manager, str) or (match := PNPM.fullmatch(manager)) is None:
+        raise PinError(f"web/package.json: packageManager {manager!r} is not pnpm@X.Y.Z")
+    return match[1]
+
+
+def uv_build_requirement(uv: str) -> str:
+    """The uv_build range for uv: this version up to the next minor."""
+    if (match := VERSION.fullmatch(uv)) is None:
+        raise PinError(f"uv version {uv!r} is not X.Y.Z")
+    major, minor = int(match[1]), int(match[2])
+    return f"uv_build>={uv},<{major}.{minor + 1}.0"
+
+
+def sync_mise(text: str, wanted: dict[str, str]) -> str:
+    """mise.toml with each wanted tool's version set. Raises PinError."""
+    before = _toml(text, "mise.toml")
+    tools = before.get("tools")
+    if not isinstance(tools, dict):
+        raise PinError("mise.toml: no [tools] table")
+    for tool, version in wanted.items():
+        current = tools.get(tool)
+        if not isinstance(current, str):
+            raise PinError(f"mise.toml: [tools] has no {tool} version string")
+        pattern = re.compile(
+            rf'^({re.escape(tool)}[ \t]*=[ \t]*"){re.escape(current)}(")', re.MULTILINE
+        )
+        text, count = pattern.subn(rf"\g<1>{version}\g<2>", text)
+        if count != 1:
+            raise PinError(f'mise.toml: expected one {tool} = "{current}" line, found {count}')
+    _verify(before, _toml(text, "mise.toml"), {("tools", t): v for t, v in wanted.items()})
+    return text
+
+
+def sync_pyproject(text: str, requirement: str) -> str:
+    """pyproject.toml with requirement as its only uv_build build requirement. Raises PinError."""
+    before = _toml(text, "pyproject.toml")
+    requires = before.get("build-system", {}).get("requires")
+    if not isinstance(requires, list):
+        raise PinError("pyproject.toml: no [build-system] requires list")
+    current = [r for r in requires if isinstance(r, str) and r.startswith("uv_build")]
+    if len(current) != 1:
+        raise PinError(f"pyproject.toml: expected one uv_build requirement, found {len(current)}")
+    quoted = f'"{current[0]}"'
+    if text.count(quoted) != 1:
+        raise PinError(f"pyproject.toml: expected {quoted} once, found {text.count(quoted)}")
+    text = text.replace(quoted, f'"{requirement}"')
+    wanted = [requirement if r == current[0] else r for r in requires]
+    _verify(before, _toml(text, "pyproject.toml"), {("build-system", "requires"): wanted})
+    return text
+
+
+def parse_lock(text: str) -> list[Jar]:
+    """Every jar in the lock, in order. Raises PinError for a malformed line or a duplicate."""
+    jars = []
+    for number, line in enumerate(text.splitlines(), 1):
+        if not line.strip() or line.startswith("#"):
+            continue
+        match = LOCK_LINE.fullmatch(line)
+        if match is None or {".", ".."} & set(match["path"].split("/")):
+            raise PinError(f"{LOCK}:{number}: not <sha256> <group>/<a>/<v>/<a>-<v>.jar")
+        coordinate = f"{match['group'].replace('/', '.')}:{match['artifact']}"
+        jars.append(Jar(match["sha256"], match["path"], coordinate))
+    if not jars:
+        raise PinError(f"{LOCK}: no jars")
+    for field in ("path", "coordinate"):
+        values = [getattr(jar, field) for jar in jars]
+        if duplicates := sorted({v for v in values if values.count(v) > 1}):
+            raise PinError(f"{LOCK}: duplicate {field} {', '.join(duplicates)}")
+    return jars
+
+
+def refresh_lock(text: str, head: str, fetch: Callable[[str, int], bytes]) -> str:
+    """The lock with a new SHA-256 for each path not in head. Raises PinError.
+
+    A path head already has must keep head's hash, so a changed hash for an unchanged jar fails
+    instead of being re-blessed. A new jar's SHA-1 must match Maven Central's .sha1 file.
+    """
+    pinned = {jar.path: jar.sha256 for jar in parse_lock(head)}
+    lines = text.splitlines(keepends=True)
+    for jar in parse_lock(text):
+        if jar.path in pinned:
+            if jar.sha256 != pinned[jar.path]:
+                raise PinError(f"{LOCK}: {jar.path} has a different hash from HEAD's")
+            continue
+        body = fetch(MAVEN + jar.path, MAX_JAR_BYTES)
+        published = fetch(MAVEN + jar.path + ".sha1", MAX_SHA1_BYTES).decode("ascii", "replace")
+        tokens = published.split()
+        if not tokens or SHA1.fullmatch(tokens[0]) is None:
+            raise PinError(f"{LOCK}: {jar.path}.sha1 is not a SHA-1")
+        if tokens[0].lower() != hashlib.sha1(body).hexdigest():
+            raise PinError(f"{LOCK}: {jar.path} does not match its published SHA-1")
+        sha256 = hashlib.sha256(body).hexdigest()
+        line = f"{jar.sha256} {jar.path}"
+        lines = [f"{sha256} {jar.path}\n" if x.rstrip("\n") == line else x for x in lines]
+    return "".join(lines)
+
+
+def check(root: Path) -> list[str]:
+    """Every pin out of step, and every lock problem, as messages; empty when all is well."""
+    try:
+        wanted = docker_versions(_read(root, "Dockerfile"))
+        wanted["pnpm"] = pnpm_version(_read(root, "web/package.json"))
+        mise, pyproject = _read(root, "mise.toml"), _read(root, "pyproject.toml")
+        expected = {
+            "mise.toml": sync_mise(mise, wanted),
+            "pyproject.toml": sync_pyproject(pyproject, uv_build_requirement(wanted["uv"])),
+        }
+        parse_lock(_read(root, LOCK))
+    except PinError as e:
+        return [str(e)]
+    actual = {"mise.toml": mise, "pyproject.toml": pyproject}
+    return [
+        f"{name} is out of step with the Dockerfile or web/package.json; "
+        "run bin/renovate-postupgrade"
+        for name in expected
+        if expected[name] != actual[name]
+    ]
+
+
+def upgrade(root: Path, head_lock: str, fetch: Callable[[str, int], bytes]) -> list[str]:
+    """Bring every copy into step and refresh changed lock hashes; the files rewritten.
+
+    Every edit is computed before any is written, so a PinError leaves every file as it was.
+    """
+    wanted = docker_versions(_read(root, "Dockerfile"))
+    wanted["pnpm"] = pnpm_version(_read(root, "web/package.json"))
+    before = {name: _read(root, name) for name in ("mise.toml", "pyproject.toml", LOCK)}
+    after = {
+        "mise.toml": sync_mise(before["mise.toml"], wanted),
+        "pyproject.toml": sync_pyproject(
+            before["pyproject.toml"], uv_build_requirement(wanted["uv"])
+        ),
+        LOCK: refresh_lock(before[LOCK], head_lock, fetch),
+    }
+    written = [name for name in after if after[name] != before[name]]
+    for name in written:
+        (root / name).write_text(after[name], encoding="utf-8")
+    return written
+
+
+def http_fetch(url: str, limit: int) -> bytes:
+    """The body at an HTTPS url, at most limit bytes. Raises PinError."""
+    if _redirect_refused(url) is not None:
+        raise PinError(f"{url}: not an HTTPS URL")
+    try:
+        with _OPENER.open(url, timeout=TIMEOUT_SECONDS) as response:
+            body = response.read(limit + 1)
+    except urllib.error.HTTPError as e:
+        e.close()
+        raise PinError(f"{url}: HTTP {e.code}") from e
+    except (urllib.error.URLError, OSError) as e:
+        raise PinError(f"{url}: {e}") from e
+    if len(body) > limit:
+        raise PinError(f"{url}: larger than {limit} bytes")
+    return body
+
+
+class _HttpsRedirects(urllib.request.HTTPRedirectHandler):
+    """Follow at most 3 redirects, each to HTTPS, never revisiting a URL."""
+
+    max_redirections = 3
+    # urllib's default of 4 visits per URL lets two URLs alternate past max_redirections
+    max_repeats = 1
+
+    def redirect_request(
+        self,
+        req: urllib.request.Request,
+        fp: IO[bytes],
+        code: int,
+        msg: str,
+        headers: http.client.HTTPMessage,
+        newurl: str,
+    ) -> urllib.request.Request | None:
+        fp.close()
+        if (reason := _redirect_refused(newurl)) is not None:
+            raise urllib.error.URLError(f"redirect refused: {reason}")
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+def _redirect_refused(url: str) -> str | None:
+    """Why url is refused, or None to fetch it."""
+    try:
+        parts = urllib.parse.urlsplit(url)
+        _ = parts.port  # Raises ValueError for a malformed port
+    except ValueError:
+        return "malformed URL"
+    if parts.scheme != "https":
+        return f"{parts.scheme or 'no'} scheme, not https"
+    if not parts.hostname:
+        return "no host"
+    return None
+
+
+_OPENER = urllib.request.build_opener(_HttpsRedirects)
+
+
+def _read(root: Path, name: str) -> str:
+    try:
+        return (root / name).read_text(encoding="utf-8")
+    except OSError as e:
+        raise PinError(f"{name}: {e}") from e
+
+
+def _toml(text: str, name: str) -> dict:
+    try:
+        return tomllib.loads(text)
+    except tomllib.TOMLDecodeError as e:
+        raise PinError(f"{name}: {e}") from e
+
+
+def _verify(before: dict, after: dict, changes: dict[tuple[str, str], object]) -> None:
+    """Raise PinError unless after is before with exactly these (table, key) values set."""
+    expected = {k: dict(v) if isinstance(v, dict) else v for k, v in before.items()}
+    for (table, key), value in changes.items():
+        expected[table][key] = value
+    if after != expected:
+        raise PinError("an edit changed more than the pins it set")
+
+
+def _head_lock(root: Path) -> str:
+    result = subprocess.run(
+        ["git", "-C", str(root), "show", f"HEAD:{LOCK}"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise PinError(f"git show HEAD:{LOCK} failed: {result.stderr.strip()}")
+    return result.stdout
+
+
+def main(argv: list[str]) -> int:
+    if argv not in ([], ["--check"]):
+        print("Usage: bin/renovate-postupgrade [--check]", file=sys.stderr)
+        return 2
+    try:
+        if argv:
+            problems = check(ROOT)
+        else:
+            written = upgrade(ROOT, _head_lock(ROOT), http_fetch)
+            print(f"renovate-postupgrade: rewrote {', '.join(written) or 'nothing'}")
+            problems = []
+    except PinError as e:
+        problems = [str(e)]
+    for problem in problems:
+        print(f"renovate-postupgrade: {problem}", file=sys.stderr)
+    return 1 if problems else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
