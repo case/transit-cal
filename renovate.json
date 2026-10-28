@@ -115,6 +115,17 @@
       "prBodyNotes": ["**Deploy**: auto — Railway rebuilds the image on merge to `main`."]
     },
     {
+      "description": "Each lockfile gets its own PR, so its title names the ecosystem.",
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["lockFileMaintenance"],
+      "commitMessageAction": "Lock file maintenance - pnpm"
+    },
+    {
+      "matchManagers": ["pep621"],
+      "matchUpdateTypes": ["lockFileMaintenance"],
+      "commitMessageAction": "Lock file maintenance - uv"
+    },
+    {
       "description": "Major version bumps always land in their own PR regardless of grouping. Major bumps break things; review one at a time.",
       "matchUpdateTypes": ["major"],
       "groupName": null
