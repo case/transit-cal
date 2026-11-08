@@ -2,6 +2,7 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
   "dependencyDashboard": false,
+  "minimumReleaseAge": "7 days",
   "prBodyColumns": ["Package", "Package file", "Update", "Change", "Pending"],
   "vulnerabilityAlerts": {
     "minimumReleaseAge": "0 days",
@@ -103,7 +104,7 @@
       "enabled": false
     },
     {
-      "description": "Renovate's docker datasource has release timestamps only on Docker Hub, so without this the 14-day wait would hold this GHCR image forever.",
+      "description": "Renovate's docker datasource has release timestamps only on Docker Hub, so without this the 7-day wait would hold this GHCR image forever.",
       "matchDatasources": ["docker"],
       "matchPackageNames": ["ghcr.io/astral-sh/uv"],
       "minimumReleaseAgeBehaviour": "timestamp-optional"
