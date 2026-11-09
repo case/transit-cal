@@ -1,7 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
-  "dependencyDashboard": false,
   "minimumReleaseAge": "7 days",
   "prBodyColumns": ["Package", "Package file", "Update", "Change", "Pending"],
   "vulnerabilityAlerts": {
