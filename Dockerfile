@@ -15,7 +15,7 @@ RUN mkdir lib \
     && javac --release 25 -cp 'lib/*' -d classes IcsValidate.java \
     && jar --create --file lib/ics-validate.jar -C classes .
 
-FROM caddy:2.11.6@sha256:907efba736324e43f891ccb9d760fe5abe545e313419b3d18d63d4ec670dad8d AS caddy
+FROM caddy:2.11.7@sha256:36c24ad91a7ff7bc4c87fe22bfa8df3c4b18da0773d73fc12ee2c52b98c0bb7e AS caddy
 
 FROM ghcr.io/astral-sh/uv:0.13.7@sha256:96f40d3904aad8d0bd010539001d36c8e2188b981e1334471a90c4a1d93bb490 AS uv
 
