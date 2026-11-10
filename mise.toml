@@ -2,7 +2,7 @@
 
 [tools]
 actionlint = "1.7.12"
-caddy = "2.11.6"
+caddy = "2.11.7"
 dprint = "0.64.3"
 editorconfig-checker = "4.0.2"
 hadolint = "2.15.1"
