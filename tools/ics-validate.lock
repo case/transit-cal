@@ -2,6 +2,6 @@
 f4cac5c4a16d8c0f2228ad0e3221b90d069ae0efea73402b51888468e86405f9 org/mnode/ical4j/ical4j/4.4.0/ical4j-4.4.0.jar
 47504a3ce71d73a1b0af07675546b8d8c5af87f82ef12b6381f9eb3c17dd5a5b commons-codec/commons-codec/1.23.0/commons-codec-1.23.0.jar
 a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe org/apache/commons/commons-lang3/3.21.0/commons-lang3-3.21.0.jar
-861ea99147f158214950955c82fd2ebc4d7b020c0422945a1086e0686cadb10d org/threeten/threeten-extra/1.10.0/threeten-extra-1.10.0.jar
+af10f12e7a1afc93a1fae5c5c6977c19b13aa7df54353555ae0b9ca89fa19629 org/threeten/threeten-extra/1.11.0/threeten-extra-1.11.0.jar
 7e1446499b359675d8aabe6af2de86b85e72ae8a2a932c0b40d0e5ba57097439 org/slf4j/slf4j-api/2.0.20/slf4j-api-2.0.20.jar
 6522080396fb339e99bae40d329a06d18d3190dc864020ac4ca943519d0fd85b org/slf4j/slf4j-nop/2.0.20/slf4j-nop-2.0.20.jar
